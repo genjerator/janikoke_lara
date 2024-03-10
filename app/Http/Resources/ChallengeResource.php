@@ -23,7 +23,7 @@ class ChallengeResource extends JsonResource
             'id' => $this->resource->id,
             'name' => $this->resource->name,
             'description' => $this->resource->description,
-            'polygons' => AreaResource::collection($this->resource->areas),
+            'areas' => AreaResource::collection($this->resource->areas),
         ];
     }
 }

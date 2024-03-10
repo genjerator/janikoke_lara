@@ -20,4 +20,10 @@ class ChallengeArea extends Model
     {
         return $this->belongsTo(Area::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_challenge_area')
+            ->withTimestamps();
+    }
 }
