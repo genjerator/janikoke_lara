@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\ChallengeTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Challenge extends Model
 {
@@ -24,6 +26,15 @@ class Challenge extends Model
     public function areas()
     {
         return $this->belongsToMany(Area::class, 'challenge_area');
+    }
+
+    public function challengeAreas()
+    {
+        return $this->belongsToMany(ChallengeArea::class, 'challenge_area');
+    }
+    public function usersChallengeAreas(): HasManyThrough
+    {
+        return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
     }
 
     protected $attributes = [

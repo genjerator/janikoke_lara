@@ -40,4 +40,14 @@ class InsideAreaService
         }
 
     }
+
+    public function isUserInsidePolygon(User $user, Area $area, Challenge $challenge){
+        $challengeArea = UserChallengeArea::where(
+            [
+                'area_id' => $area->id,
+                'challenge_id' => $challenge->id,
+                'user_id' => $challenge->id,
+            ]
+        )->first();
+    }
 }

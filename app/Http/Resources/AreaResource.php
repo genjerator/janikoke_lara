@@ -2,9 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Services\InsideAreaService;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\App;
 use MatanYadaev\EloquentSpatial\Objects\Geometry;
 
 /**
@@ -32,6 +34,7 @@ class AreaResource extends JsonResource
                     ];
                 }
             ,$this->resource->area->getCoordinates()[0]),
+            'status'=>"aa",
         ];
     }
 }

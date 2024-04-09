@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 
@@ -24,5 +25,10 @@ class Area extends Model
     public function challenges()
     {
         return $this->belongsToMany(Challenge::class, 'challenge_area');
+    }
+
+    public function usersChallengeAreas(): HasManyThrough
+    {
+        return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
     }
 }
