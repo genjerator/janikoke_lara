@@ -24,7 +24,6 @@ services:
             - sail
         depends_on:
             - pgsql
-            - redis
     pgsql:
         image: 'postgis/postgis:16-master'
         ports:
