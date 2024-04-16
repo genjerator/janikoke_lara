@@ -24,7 +24,6 @@ services:
             - sail
         depends_on:
             - pgsql
-            - redis
     pgsql:
         image: 'postgis/postgis:16-master'
         ports:
@@ -42,21 +41,24 @@ services:
             test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
             retries: 3
             timeout: 5s
-
-    ngrok:
-        image: 'ngrok/ngrok:alpine'
-        environment:
-            NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}'
-        command: 'http laravel.test:80'
-        ports:
-            - '4040:4040'
-        networks:
-            - sail
-        depends_on:
-            - laravel.test
+#    ngrok:
+#        image: 'ngrok/ngrok:alpine'
+#        environment:
+#            NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}'
+#        command: 'http laravel.test:80'
+#        ports:
+#            - '4040:4040'
+#        networks:
+#            - sail
+#        depends_on:
+#            - laravel.test
 networks:
     sail:
         driver: bridge
 volumes:
     sail-pgsql:
         driver: local
+#    sail-redis:
+#        driver: local
+#    sail-meilisearch:
+#        driver: local
