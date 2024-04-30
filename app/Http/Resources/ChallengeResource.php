@@ -21,10 +21,10 @@ class ChallengeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $areas = $this->resource->areas;
-
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,
+            'type'=>$this->resource->type,
             'description' => $this->resource->description,
             'areas' => AreaResource::collection($areas),
         ];

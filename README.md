@@ -13,3 +13,15 @@ sail up-d
 php artisan octane:stop
 sail artisan octane:start --watch --port=80 --admin-port=2020
 su - laravel -s /bin/bash
+
+
+pgsql
+docker exec -it postgres-container bash
+su postgres
+psql
+
+docker exec -it frank1-pgsql-1 psql -U postgres
+
+sail down -v
+sail build --no-cache
+sail up -d

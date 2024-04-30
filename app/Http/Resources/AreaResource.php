@@ -34,7 +34,6 @@ class AreaResource extends JsonResource
                     ];
                 }
             ,$this->resource->area->getCoordinates()[0]),
-            'status'=>"aa",
         ];
     }
 }
