@@ -25,3 +25,4 @@ Route::get('/round', function (Request $request) {
 Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
 
 Route::get('/round/{round}', [RoundController::class, 'challenges']);
+Route::get('/roundr/{round}', [RoundController::class, 'roundResults']);

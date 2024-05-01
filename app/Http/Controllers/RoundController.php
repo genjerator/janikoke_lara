@@ -23,7 +23,9 @@ class RoundController extends Controller
 
     public function challenges(Round $round)
     {
-        return ChallengeResource::collection($round->challenges);
+        $user = User::find(1);
+        $mix = $this->insideAreaService->mix($round, $user);
+        return new JsonResponse($mix, Response::HTTP_OK);
     }
 
     public function uchallenges(Round $round)

@@ -16,7 +16,6 @@ services:
             LARAVEL_SAIL: 1
             XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            PHP_IDE_CONFIG: "serverName=Docker"
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
@@ -42,17 +41,17 @@ services:
             retries: 3
             timeout: 5s
 
-    ngrok:
-        image: 'ngrok/ngrok:alpine'
-        environment:
-            NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}'
-        command: 'http laravel.test:80'
-        ports:
-            - '4040:4040'
-        networks:
-            - sail
-        depends_on:
-            - laravel.test
+#    ngrok:
+#        image: 'ngrok/ngrok:alpine'
+#        environment:
+#            NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}'
+#        command: 'http laravel.test:80'
+#        ports:
+#            - '4040:4040'
+#        networks:
+#            - sail
+#        depends_on:
+#            - laravel.test
 networks:
     sail:
         driver: bridge

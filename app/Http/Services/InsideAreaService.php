@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Enums\ChallengeTypeEnum;
+use App\Http\Resources\ChallengeResource;
 use App\Models\Area;
 use App\Models\Challenge;
 use App\Models\ChallengeArea;
@@ -58,7 +59,7 @@ class InsideAreaService
     {
         $results = DB::table('challenges as c')
             ->select(
-                DB::raw('CONCAT(c.id, \'-\', a.id) as car'),
+                DB::raw('CONCAT(c.id, \'-\', a.id) as cidaid'),
                 'c.id as challenge_id',
                 'a.id as area_id',
                 'c.name as challenge_name',
@@ -73,7 +74,7 @@ class InsideAreaService
             ->where('uca.user_id', $user->id)
             ->get();
 
-        return $results;
+        return $results->keyBy('cidaid');
     }
 
     public function allChallengesAreasPerRound($round)
@@ -83,7 +84,7 @@ class InsideAreaService
             ->rightJoin('challenges as c', 'c.id', '=', 'ca.challenge_id')
             ->rightJoin('areas as a', 'a.id', '=', 'ca.area_id')
             ->select(
-                DB::raw('concat(c.id,\'-\',a.id) as ca'),
+                DB::raw('concat(c.id,\'-\',a.id) as cidaid'),
                 'c.id as id',
                 'c.name as name',
                 'c.type as type',
@@ -113,17 +114,40 @@ class InsideAreaService
                 'polygons' => $points,
             ];
             $result->areas = $areas;
-            unset($result->area_id,$result->area_name,$result->area_description,$result->polygons);
+//            dd($result->keyBy('cidaid'));
+            unset($result->area_id, $result->area_name, $result->area_description, $result->polygons);
             return $result;
         });
 
-        return $results->groupBy('id')->toArray();
+        return $results->groupBy('id');
     }
 
-    public function mix(Round $round, User $user){
-        $all = $this->allChallengesAreasPerRound($round);
-        $roundResult = $this->roundResults($round, $user);
-        dd($all,$round);
+    public function mix(Round $round, User $user)
+    {
+        $tt = ChallengeResource::collection($round->challenges);
+        $results = $this->roundResults($round, $user);
+        $allChallenges = json_decode($tt->toJson(), true);
+        $allChallenges = array_map(function ($challenge) use ($results) {
+            $challenge['areas'] = $this->updateArea($challenge['areas'], $challenge['id'], $results);
+
+            return $challenge;
+        }, $allChallenges);
+        return $allChallenges;
+    }
+
+    public function updateArea(array &$areas, $challengeId, $results): array
+    {
+
+        $areas = array_map(function ($area) use ($results, $challengeId) {
+            if ($results->has($challengeId . '-' . $area['id'])) {
+                $area['status'] = 1;
+            } else {
+                $area['status'] = 0;
+            }
+
+            return $area;
+        }, $areas);
+        return $areas;
     }
 }
 
