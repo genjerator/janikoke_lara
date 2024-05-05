@@ -77,6 +77,23 @@ class InsideAreaService
         return $results->keyBy('cidaid');
     }
 
+    public function getResults(Round $round, User $user)
+    {
+        $results = $this->roundResults($round, $user)->toArray();
+        $points = array_map( function ( $item) {
+            $item->points = 10;
+            return $item;
+        },$results);
+
+        return $points;
+    }
+
+    public function getRawResults(Round $round, User $user)
+    {
+        return $this->roundResults($round, $user);
+    }
+
+
     public function allChallengesAreasPerRound($round)
     {
         $results = DB::table('user_challenge_area as uca')

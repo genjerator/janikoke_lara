@@ -23,6 +23,7 @@ Route::get('/round', function (Request $request) {
 });
 
 Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
-
+Route::get('/round/{round}/result', [RoundController::class, 'roundResults']);
+Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
 Route::get('/round/{round}', [RoundController::class, 'challenges']);
-Route::get('/roundr/{round}', [RoundController::class, 'roundResults']);
+
