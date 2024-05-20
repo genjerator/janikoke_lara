@@ -7,12 +7,16 @@
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
+        "inertiajs/inertia-laravel": "^1.1",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "matanyadaev/laravel-eloquent-spatial": "^4.1"
+        "livewire/livewire": "^3.4",
+        "matanyadaev/laravel-eloquent-spatial": "^4.1",
+        "tightenco/ziggy": "^2.2"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
