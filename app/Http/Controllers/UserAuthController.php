@@ -37,9 +37,9 @@ class UserAuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            return response()->json([
+            return response()->json(
                 new UserResource($user)
-            ], 200);
+            , 200);
 
         } catch (\Throwable $th) {
             return response()->json([
