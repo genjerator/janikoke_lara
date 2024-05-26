@@ -9,6 +9,7 @@ use App\Models\Challenge;
 use App\Models\Round;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoundController extends Controller
@@ -45,7 +46,7 @@ class RoundController extends Controller
 
     public function roundResults(Round $round)
     {
-        $user = User::findOrFail(1);
+        $user = Auth::user();
         return new JsonResponse($this->insideAreaService->getResults($round, $user), Response::HTTP_CREATED);
     }
 
