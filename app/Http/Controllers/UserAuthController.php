@@ -12,15 +12,16 @@ use Illuminate\Support\Facades\Validator;
 
 class UserAuthController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         try {
             $validateUser = Validator::make($request->all(),
                 [
-                    'email' => 'required|email',
+                    'email' => 'required|string',
                     'password' => 'required'
                 ]);
 
-            if($validateUser->fails()){
+            if ($validateUser->fails()) {
                 return response()->json([
                     'status' => false,
                     'message' => 'validation error',
@@ -28,18 +29,27 @@ class UserAuthController extends Controller
                 ], 401);
             }
 
-            if(!Auth::attempt($request->only(['email', 'password']))){
+//            if(!Auth::attempt($request->only(['email', 'password']))){
+//                return response()->json([
+//                    'status' => false,
+//                    'message' => 'Email & Password does not match with our record.',
+//                ], 401);
+//            }
+
+            $user = User::where(function ($query) use ($request) {
+                $query->where('email', $request->email)
+                    ->orWhere('name', $request->email);
+            })
+                ->whereNotNull('email_verified_at')
+                ->first();
+            if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Email & Password does not match with our record.',
+                    'message' => 'Invalid Credentials'
                 ], 401);
             }
-
-            $user = User::where('email', $request->email)->first();
-
             return response()->json(
                 new UserResource($user)
-            , 200);
+                , 200);
 
         } catch (\Throwable $th) {
             return response()->json([
@@ -50,16 +60,17 @@ class UserAuthController extends Controller
     }
 
 
-
-    public function logout(){
+    public function logout()
+    {
         auth()->user()->tokens()->delete();
 
         return response()->json([
-            "message"=>"logged out"
+            "message" => "logged out"
         ]);
     }
 
-    public function getUser(){
+    public function getUser()
+    {
         $user = Auth::user();
         dd($user);
     }
