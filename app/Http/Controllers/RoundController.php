@@ -21,14 +21,14 @@ class RoundController extends Controller
 
     public function challenges(Round $round)
     {
-        $user = User::find(1);
+        $user = Auth::user();
         $mix = $this->insideAreaService->mix($round, $user);
         return new JsonResponse($mix, Response::HTTP_OK);
     }
 
     public function uchallenges(Round $round)
     {
-        $user = User::find(1);
+        $user = User::findOrFail(request('user_id'));
         $roundResult = $this->insideAreaService->roundResults($round, $user);
 
         return new JsonResponse($roundResult);
@@ -36,7 +36,7 @@ class RoundController extends Controller
 
     public function insidePolygon(InsidePolygonRequest $request, Round $round): JsonResponse
     {
-        $user = User::findOrFail(request('user_id'));
+        $user = Auth::user();
         $challenge = Challenge::findOrFail(request('challenge_id'));
         $area = Area::findOrFail(request('area_id'));
         $this->insideAreaService->proccess($user, $challenge, $area);

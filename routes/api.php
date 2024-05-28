@@ -22,13 +22,16 @@ Route::post('/logout',[UserAuthController::class,'logout'])
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
     // Add more routes that require authentication here
+    Route::get('/round/{round}', [RoundController::class, 'challenges']);
+
     Route::get('/round/{round}/result', [RoundController::class, 'roundResults']);
+
+    Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
+    Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
+
+
 });
 Route::get('/round', function (Request $request) {
     return 'sdsdsd';
 });
-
-Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
-Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
-Route::get('/round/{round}', [RoundController::class, 'challenges']);
 
