@@ -3,16 +3,21 @@
 namespace App\Admin\Rounds;
 
 use App\Http\Controllers\Controller;
+use App\Http\Services\InsideAreaService;
 use App\Models\Round;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class RoundsController extends Controller
 {
+    public function __construct(private InsideAreaService $insideAreaService)
+    {
+
+    }
     public function index()
     {
 
-        $rounds = Round::all();
+        $rounds = Round::with("challenges.areas")->get();
         return Inertia::render('Rounds/Index', ['rounds' => $rounds]);
     }
 

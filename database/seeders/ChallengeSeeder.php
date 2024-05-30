@@ -22,7 +22,7 @@ class ChallengeSeeder extends Seeder
     {
         $round = Round::where('name', 'Round1')->first();
 
-        if(!Area::where('name', 'Quay mornarica')->exists()) {
+        if (!Area::where('name', 'Quay mornarica')->exists()) {
             $areaMornarica = Area::factory()->create([
                 'name' => 'Quay mornarica',
                 'description' => 'Quay mornarica',
@@ -39,7 +39,7 @@ class ChallengeSeeder extends Seeder
             ]);
         }
 
-        if(!Area::where('name', 'Quay strand')->exists()) {
+        if (!Area::where('name', 'Quay strand')->exists()) {
             $areaStrand = Area::factory()->create([
                 'name' => 'Quay strand',
                 'description' => 'Quay strand',
@@ -56,7 +56,7 @@ class ChallengeSeeder extends Seeder
             ]);
         }
 
-        if(!Area::where('name', 'Quay zepelin')->exists()) {
+        if (!Area::where('name', 'Quay zepelin')->exists()) {
             $areaZepelin = Area::factory()->create([
                 'name' => 'Quay zepelin',
                 'description' => 'Quay zepelin',
@@ -72,24 +72,19 @@ class ChallengeSeeder extends Seeder
                 ]),
             ]);
         }
-       // if(!Challenge::where('name', 'Quay')->exists()) {
-//            $challenge = Challenge::factory()->create([
-//                'round_id' => $round->id,
-//                'name' => 'Quay',
-//                'description' => 'Quay',
-//            ]);
 
-            ChallengeArea::factory()->create([
-                'challenge_id' => 3,
-                'area_id' => 8
-            ]);
-            ChallengeArea::factory()->create([
-                'challenge_id' => 3,
-                'area_id' => 9
-            ]);ChallengeArea::factory()->create([
-                'challenge_id' => 3,
-                'area_id' => 10
-            ]);
-       // }
+        ChallengeArea::factory()->create([
+            'challenge_id' => 3,
+            'area_id' => 8
+        ]);
+        ChallengeArea::factory()->create([
+            'challenge_id' => 3,
+            'area_id' => 9
+        ]);
+        ChallengeArea::factory()->create([
+            'challenge_id' => 3,
+            'area_id' => 10
+        ]);
+        // }
     }
 }

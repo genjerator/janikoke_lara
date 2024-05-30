@@ -5,6 +5,7 @@ import { Body, Cell, Head, HeaderCell, HeaderRow, Row, Table } from '@zendeskgar
 
 const Index = ({ rounds }) => {
 
+    console.log(rounds);
     return (
         <div>
             <h1>Roundsss</h1>
@@ -20,14 +21,12 @@ const Index = ({ rounds }) => {
                 </Head>
                 <Body>
                 {rounds.map(round => (
-                    <HeaderRow key={round.id}>
-                        <HeaderCell>{round.name}</HeaderCell>
-                        <HeaderCell>{round.description}</HeaderCell>
-                        <HeaderCell>{round.starts_at}</HeaderCell>
-                        <HeaderCell>{round.ends_at}</HeaderCell>
+                    <HeaderRow >
+                        <HeaderCell></HeaderCell>
+                        <HeaderCell></HeaderCell>
+                        <HeaderCell></HeaderCell>
+                        <HeaderCell></HeaderCell>
                         <HeaderCell>
-                            <Anchor href="/admin/rounds/">Edit</Anchor>
-                            <Button onClick={() => handleDelete(round.id)}>Delete</Button>
                         </HeaderCell>
                     </HeaderRow>
                 ))}

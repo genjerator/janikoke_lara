@@ -27,4 +27,12 @@ class Round extends Model
     {
         return $this->hasMany(Challenge::class);
     }
+
+    /**
+     * @return HasMany
+     */
+    public function activeChallenges():HasMany
+    {
+        return $this->hasMany(Challenge::class)->active();
+    }
 }

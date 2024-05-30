@@ -5,12 +5,13 @@ namespace App\Models;
 use App\Enums\ChallengeTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Query\Builder;
 
 class Challenge extends Model
 {
     use HasFactory;
+
     protected string $name;
     protected string $description;
     protected $fillable = [
@@ -23,6 +24,7 @@ class Challenge extends Model
     {
         return $this->belongsTo(Round::class);
     }
+
     public function areas()
     {
         return $this->belongsToMany(Area::class, 'challenge_area');
@@ -32,6 +34,7 @@ class Challenge extends Model
     {
         return $this->belongsToMany(ChallengeArea::class, 'challenge_area');
     }
+
     public function usersChallengeAreas(): HasManyThrough
     {
         return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
@@ -49,6 +52,11 @@ class Challenge extends Model
             'Zigzag' => ChallengeTypeEnum::Zigzag->value,
             default => ChallengeTypeEnum::TenEach->value,
         };
+    }
+
+    public function scopeActive( $query)
+    {
+        return $query->where('active', true);
     }
 
 }

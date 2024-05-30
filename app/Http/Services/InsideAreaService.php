@@ -141,7 +141,7 @@ class InsideAreaService
 
     public function mix(Round $round, User $user)
     {
-        $tt = ChallengeResource::collection($round->challenges);
+        $tt = ChallengeResource::collection($round->activeChallenges);
         $results = $this->roundResults($round, $user);
         $allChallenges = json_decode($tt->toJson(), true);
         $allChallenges = array_map(function ($challenge) use ($results) {
