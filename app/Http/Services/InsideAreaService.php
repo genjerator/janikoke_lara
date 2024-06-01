@@ -77,6 +77,27 @@ class InsideAreaService
         return $results->keyBy('cidaid');
     }
 
+    public function allRoundResults(Round $round)
+    {
+        $results = DB::table('challenges as c')
+            ->select(
+                DB::raw('CONCAT(c.id, \'-\', a.id) as cidaid'),
+                'c.id as challenge_id',
+                'a.id as area_id',
+                'c.name as challenge_name',
+                'c.type as challenge_type',
+                'c.description as challenge_description',
+                'a.id as area_id',
+                'a.name as area_name'
+            )
+            ->join('challenge_area as ca', 'ca.challenge_id', '=', 'c.id')
+            ->join('user_challenge_area as uca', 'uca.challenge_area_id', '=', 'ca.id')
+            ->join('areas as a', 'a.id', '=', 'ca.area_id')
+            ->get();
+
+        return $results->keyBy('cidaid');
+    }
+
     public function getResults(Round $round, User $user)
     {
         $results = $this->roundResults($round, $user)->toArray();
@@ -88,9 +109,9 @@ class InsideAreaService
         return $points;
     }
 
-    public function getRawResults(Round $round, User $user)
+    public function getRawResults(Round $round)
     {
-        return $this->roundResults($round, $user);
+        return $this->allRoundResults($round);
     }
 
 

@@ -44,7 +44,8 @@ class AreaSeeder extends Seeder
 //        }
         //$this->limanskiPark();
         //$this->betjar();
-        $this->rk();
+        //$this->rk();
+        $this->test();
     }
 
     public function limanskiPark(): void
@@ -355,6 +356,30 @@ class AreaSeeder extends Seeder
                         new Point(19.4129268, 45.5552128),
                         new Point(19.4107060, 45.5562495),
                         new Point(19.4084207, 45.5550776),
+                    ]),
+                ]),
+            ]);
+            ChallengeArea::factory()->create([
+                'challenge_id' => $challenge->id,
+                'area_id' => $areaBuilding->id
+            ]);
+        }
+    }
+
+    public function test(){
+        $challenge = Challenge::where('id', 1)->first();
+        if (!Area::where('name', 'test111')->exists()) {
+            $areaBuilding = Area::factory()->create([
+                'name' => 'test111',
+                'description' => 'test111',
+                'point' => null,
+                'area' => new Polygon([
+                    new LineString([
+                        new Point(19.8378394, 45.2383471),
+                        new Point(19.8380969, 45.2377503),
+                        new Point(19.8387729, 45.2377125),
+                        new Point(19.8386978, 45.2384302),
+                        new Point(19.8378394, 45.2383471)
                     ]),
                 ]),
             ]);

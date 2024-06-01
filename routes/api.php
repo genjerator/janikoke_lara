@@ -28,11 +28,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/round/{round}/result', [RoundController::class, 'roundResults']);
 
-    Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
-
-
 });
 Route::get('/round', function (Request $request) {
     return 'sdsdsd';
 });
+Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
+
 

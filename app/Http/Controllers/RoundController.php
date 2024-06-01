@@ -52,8 +52,7 @@ class RoundController extends Controller
 
     public function roundRawResults(Round $round)
     {
-        $user = User::findOrFail(1);
-        return new JsonResponse($this->insideAreaService->getRawResults($round, $user), Response::HTTP_CREATED);
+        return new JsonResponse($this->insideAreaService->getRawResults($round), Response::HTTP_CREATED);
     }
 
 }
