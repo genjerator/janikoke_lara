@@ -66,12 +66,15 @@ class InsideAreaService
                 'c.type as challenge_type',
                 'c.description as challenge_description',
                 'a.id as area_id',
-                'a.name as area_name'
+                'a.name as area_name',
+                DB::raw('CAST(EXTRACT(EPOCH FROM uca.created_at) AS INTEGER) as time')
             )
             ->join('challenge_area as ca', 'ca.challenge_id', '=', 'c.id')
             ->join('user_challenge_area as uca', 'uca.challenge_area_id', '=', 'ca.id')
             ->join('areas as a', 'a.id', '=', 'ca.area_id')
             ->where('uca.user_id', $user->id)
+            ->orderBy('c.id', 'asc')
+            ->orderBy('time', 'desc')
             ->get();
 
         return $results->keyBy('cidaid');
@@ -101,10 +104,10 @@ class InsideAreaService
     public function getResults(Round $round, User $user)
     {
         $results = $this->roundResults($round, $user)->toArray();
-        $points = array_map( function ( $item) {
+        $points = array_map(function ($item) {
             $item->points = 10;
             return $item;
-        },$results);
+        }, $results);
 
         return $points;
     }
@@ -162,11 +165,11 @@ class InsideAreaService
 
     public function mix(Round $round, User $user)
     {
-        $tt = ChallengeResource::collection($round->activeChallenges);
+        $allActivChallengesPerRound = ChallengeResource::collection($round->activeChallenges);
         $results = $this->roundResults($round, $user);
-        $allChallenges = json_decode($tt->toJson(), true);
+        $allChallenges = json_decode($allActivChallengesPerRound->toJson(), true);
         $allChallenges = array_map(function ($challenge) use ($results) {
-            $challenge['areas'] = $this->updateArea($challenge['areas'], $challenge['id'], $results);
+            $challenge['areas'] = $this->updateAreaZigzag($challenge['areas'], $challenge['id'], $results);
 
             return $challenge;
         }, $allChallenges);
@@ -175,7 +178,6 @@ class InsideAreaService
 
     public function updateArea(array &$areas, $challengeId, $results): array
     {
-
         $areas = array_map(function ($area) use ($results, $challengeId) {
             if ($results->has($challengeId . '-' . $area['id'])) {
                 $area['status'] = 1;
@@ -185,6 +187,28 @@ class InsideAreaService
 
             return $area;
         }, $areas);
+        return $areas;
+    }
+
+    public function updateAreaZigzag(array &$areas, $challengeId, $results): array
+    {
+
+        $grouped = $results->groupBy('challenge_id');
+        $grouped = $grouped->map(function ($challenges) {
+            return $challenges->values()->map(function ($challenge, $index) {
+                $challenge->status = $index === 0 ? 1 : 0;
+                return $challenge;
+            });
+        });
+
+        $grouped = $grouped->flatten(1)->keyBy('cidaid');
+
+        $areas = array_map(function ($area) use ($grouped, $challengeId) {
+            $r = $grouped->get($challengeId . '-' . $area['id']);
+            $area['status'] = $r->status ?? 0;
+            return $area;
+        },$areas);
+
         return $areas;
     }
 }
