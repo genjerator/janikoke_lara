@@ -44,16 +44,16 @@ class InsideAreaService
 
     }
 
-    public function isUserInsidePolygon(User $user, Area $area, Challenge $challenge)
-    {
-        $challengeArea = UserChallengeArea::where(
-            [
-                'area_id' => $area->id,
-                'challenge_id' => $challenge->id,
-                'user_id' => $challenge->id,
-            ]
-        )->first();
-    }
+//    public function isUserInsidePolygon(User $user, Area $area, Challenge $challenge)
+//    {
+//        $challengeArea = UserChallengeArea::where(
+//            [
+//                'area_id' => $area->id,
+//                'challenge_id' => $challenge->id,
+//                'user_id' => $challenge->id,
+//            ]
+//        )->first();
+//    }
 
     public function roundResults(Round $round, User $user)
     {
@@ -91,14 +91,15 @@ class InsideAreaService
                 'c.type as challenge_type',
                 'c.description as challenge_description',
                 'a.id as area_id',
-                'a.name as area_name'
+                'a.name as area_name',
+                'uca.id as id'
             )
             ->join('challenge_area as ca', 'ca.challenge_id', '=', 'c.id')
             ->join('user_challenge_area as uca', 'uca.challenge_area_id', '=', 'ca.id')
             ->join('areas as a', 'a.id', '=', 'ca.area_id')
             ->get();
 
-        return $results->keyBy('cidaid');
+        return $results->keyBy('id');
     }
 
     public function getResults(Round $round, User $user)

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\RoundController;
+use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\UserAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,12 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/round/{round}', [RoundController::class, 'challenges']);
 
-    Route::get('/round/{round}/result', [RoundController::class, 'roundResults']);
-
+    Route::get('/round/{round}/scores', [ScoreController::class, 'roundScores']);
+    Route::get('/round/{round}/result', [ScoreController::class, 'roundScores']);
+    //swat this
 });
 Route::get('/round', function (Request $request) {
     return 'sdsdsd';
 });
-Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
+//Route::get('/round/{round}/rawresult', [RoundController::class, 'roundRawResults']);
 
 
