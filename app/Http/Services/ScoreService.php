@@ -44,6 +44,7 @@ class ScoreService
                 'c.description as challenge_description',
                 'a.id as area_id',
                 'a.name as area_name',
+                's.amount as points',
                 DB::raw('EXTRACT(EPOCH FROM s.created_at)::INT AS created_at_unix')
             )
             ->join('challenge_area as ca', 's.challenge_area_id', '=', 'ca.id')
