@@ -50,6 +50,7 @@ class ScoreService
             ->join('challenge_area as ca', 's.challenge_area_id', '=', 'ca.id')
             ->join('areas as a', 'a.id', '=', 'ca.area_id')
             ->join('challenges as c', 'c.id', '=', 'ca.challenge_id')
+            ->where("s.user_id",$user->id)
             ->get();
 
         return $results->keyBy('cidaid');
