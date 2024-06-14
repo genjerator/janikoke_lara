@@ -11,7 +11,7 @@
     <meta property="og:title" content="Janikoke">
     <meta property="og:description" content="Jani koke fun club.">
     <meta property="og:image" content="{{ config('app.url') }}/band.jpg">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="{{ config('app.url') }}">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card meta tags (optional but recommended) -->
