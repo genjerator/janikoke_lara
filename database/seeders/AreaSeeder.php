@@ -42,10 +42,10 @@ class AreaSeeder extends Seeder
 //                'area_id' => $areaBuilding->id
 //            ]);
 //        }
-        //$this->limanskiPark();
-        //$this->betjar();
-        //$this->rk();
-        $this->test();
+        $this->limanskiPark();
+        $this->betjar();
+        $this->rk();
+        //$this->test();
     }
 
     public function limanskiPark(): void

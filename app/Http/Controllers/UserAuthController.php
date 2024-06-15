@@ -42,6 +42,7 @@ class UserAuthController extends Controller
             })
                 ->whereNotNull('email_verified_at')
                 ->first();
+
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'message' => 'Invalid Credentials'
