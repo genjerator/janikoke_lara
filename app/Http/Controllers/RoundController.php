@@ -37,11 +37,12 @@ class RoundController extends Controller
     public function insidePolygon(InsidePolygonRequest $request, Round $round): JsonResponse
     {
         $user = Auth::user();
+
         $challenge = Challenge::findOrFail(request('challenge_id'));
         $area = Area::findOrFail(request('area_id'));
-        $this->insideAreaService->proccess($user, $challenge, $area);
-
-        return new JsonResponse('', Response::HTTP_CREATED);
+        $ok = $this->insideAreaService->proccess($user, $challenge, $area);
+        $message = ['status'=>$ok];
+        return new JsonResponse($message, Response::HTTP_CREATED);
     }
 
     public function roundResults(Round $round)

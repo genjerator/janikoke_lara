@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class InsideAreaService
 {
-    public function proccess(User $user, Challenge $challenge, Area $area): void
+    public function proccess(User $user, Challenge $challenge, Area $area): bool
     {
         $challengeArea = ChallengeArea::where(['area_id' => $area->id, 'challenge_id' => $challenge->id])->first();
         if ($challenge->type === ChallengeTypeEnum::TenEach->value) {
@@ -24,6 +24,7 @@ class InsideAreaService
                     'challenge_area_id' => $challengeArea->id
                 ]
             );
+            return true;
         } else if ($challenge->type === ChallengeTypeEnum::Zigzag->value) {
             $last = UserChallengeArea::where(
                 [
@@ -38,10 +39,11 @@ class InsideAreaService
                         'challenge_area_id' => $challengeArea->id
                     ]
                 );
+                return true;
             }
-            dd($last->challenge_area_id ?? 0, $challengeArea->id);
-        }
 
+        }
+        return false;
     }
 
 //    public function isUserInsidePolygon(User $user, Area $area, Challenge $challenge)
