@@ -25,3 +25,15 @@ docker exec -it frank1-pgsql-1 psql -U postgres
 sail down -v
 sail build --no-cache
 sail up -d
+
+inertia
+
+install npm
+apt install vite
+npm run build
+
+db
+
+sail artisan migrate
+sail artisan db:seed
+sail artisan db:seed UserSeeder
