@@ -20,28 +20,28 @@ class AreaSeeder extends Seeder
      */
     public function run(): void
     {
-//        $challenge = Challenge::where('name', 'Liman 3')->first();
-//        if (!Area::where('name', 'Liman 3 building')->exists()) {
-//            $areaBuilding = Area::factory()->create([
-//                'name' => 'Liman 3 building',
-//                'description' => 'Liman 3 building',
-//                'point' => null,
-//                'area' => new Polygon([
-//                    new LineString([
-//                        new Point(19.8382080, 45.2382009),
-//                        new Point(19.8382777, 45.2380537),
-//                        new Point(19.8386908, 45.2381405),
-//                        new Point(19.8385674, 45.2383369),
-//                        new Point(19.8382080, 45.2382009),
-//                    ]),
-//                ]),
-//            ]);
-//
-//            ChallengeArea::factory()->create([
-//                'challenge_id' => $challenge->id,
-//                'area_id' => $areaBuilding->id
-//            ]);
-//        }
+        $challenge = Challenge::where('name', 'Liman 3')->first();
+        if (!Area::where('name', 'Liman 3 building')->exists()) {
+            $areaBuilding = Area::factory()->create([
+                'name' => 'Liman 3 building',
+                'description' => 'Liman 3 building',
+                'point' => null,
+                'area' => new Polygon([
+                    new LineString([
+                        new Point(19.8382080, 45.2382009),
+                        new Point(19.8382777, 45.2380537),
+                        new Point(19.8386908, 45.2381405),
+                        new Point(19.8385674, 45.2383369),
+                        new Point(19.8382080, 45.2382009),
+                    ]),
+                ]),
+            ]);
+
+            ChallengeArea::factory()->create([
+                'challenge_id' => $challenge->id,
+                'area_id' => $areaBuilding->id
+            ]);
+        }
         $this->limanskiPark();
         $this->betjar();
         $this->rk();

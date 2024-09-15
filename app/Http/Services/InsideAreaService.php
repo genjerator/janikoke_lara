@@ -24,7 +24,6 @@ class InsideAreaService
                     'challenge_area_id' => $challengeArea->id
                 ]
             );
-            return true;
         } else if ($challenge->type === ChallengeTypeEnum::Zigzag->value) {
             $last = UserChallengeArea::where(
                 [
