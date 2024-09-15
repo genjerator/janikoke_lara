@@ -18,13 +18,13 @@ class InsideAreaService
     {
         $challengeArea = ChallengeArea::where(['area_id' => $area->id, 'challenge_id' => $challenge->id])->first();
         if ($challenge->type === ChallengeTypeEnum::TenEach->value) {
-            UserChallengeArea::firstOrCreate(
+            $uca = UserChallengeArea::firstOrCreate(
                 [
                     'user_id' => $user->id,
                     'challenge_area_id' => $challengeArea->id
                 ]
             );
-            return true;
+            return $uca->wasRecentlyCreated();
         } else if ($challenge->type === ChallengeTypeEnum::Zigzag->value) {
             $last = UserChallengeArea::where(
                 [
