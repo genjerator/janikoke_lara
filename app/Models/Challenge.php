@@ -50,7 +50,7 @@ class Challenge extends Model
         $this->attributes['type'] = match ($value) {
             'TenEach' => ChallengeTypeEnum::TenEach->value,
             'Zigzag' => ChallengeTypeEnum::Zigzag->value,
-            default => ChallengeTypeEnum::TenEach->value,
+            default => ChallengeTypeEnum::Zigzag->value,
         };
     }
 
