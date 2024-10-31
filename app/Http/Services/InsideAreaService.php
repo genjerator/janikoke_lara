@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\DB;
 
 class InsideAreaService
 {
-    public function proccess(User $user, Challenge $challenge, Area $area): bool
+    public function process(User $user, int $challenge, int $area): bool
     {
-        $challengeArea = ChallengeArea::where(['area_id' => $area->id, 'challenge_id' => $challenge->id])->first();
-        if ($challenge->type === ChallengeTypeEnum::TenEach->value) {
+        $challengeArea = ChallengeArea::where(['area_id' => $area, 'challenge_id' => $challenge])->first();
+        $type = ChallengeTypeEnum::Zigzag->value;
+        if ($type === ChallengeTypeEnum::TenEach->value) {
             $uca = UserChallengeArea::firstOrCreate(
                 [
                     'user_id' => $user->id,
@@ -25,7 +26,7 @@ class InsideAreaService
                 ]
             );
             return $uca->wasRecentlyCreated;
-        } else if ($challenge->type === ChallengeTypeEnum::Zigzag->value) {
+        } else if ($type === ChallengeTypeEnum::Zigzag->value) {
             $last = UserChallengeArea::where(
                 [
                     'user_id' => $user->id,

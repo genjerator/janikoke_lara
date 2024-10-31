@@ -1,7 +1,10 @@
 <?php
+
+use App\Admin\Challenge\ChallengeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Admin\Rounds\RoundsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,12 +17,24 @@ use App\Admin\Rounds\RoundsController;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Home');
-});
-Route::get('/rounds', [RoundsController::class, 'index'])->name('rounds.index');
-Route::get('/rounds/create', [RoundsController::class, 'create'])->name('rounds.create');
-Route::post('/rounds', [RoundsController::class, 'store'])->name('rounds.store');
-Route::get('/rounds/{round}/edit', [RoundsController::class, 'edit'])->name('rounds.edit');
-Route::put('/rounds/{round}', [RoundsController::class, 'update'])->name('rounds.update');
-Route::delete('/rounds/{round}', [RoundsController::class, 'destroy'])->name('rounds.destroy');
+    return Inertia::render('Admin/Home');
+})->name('admin');;
+Route::middleware('auth')->group(function () {
+    Route::get('/rounds', [RoundsController::class, 'index'])->name('admin.rounds.index');
+    Route::get('/rounds/create', [RoundsController::class, 'create'])->name('rounds.create');
+    Route::post('/rounds', [RoundsController::class, 'store'])->name('rounds.store');
+    Route::get('/rounds/{round}/edit', [RoundsController::class, 'edit'])->name('admin.rounds.edit');
+    Route::put('/rounds/{round}', [RoundsController::class, 'update'])->name('rounds.update');
+    Route::delete('/rounds/{round}', [RoundsController::class, 'destroy'])->name('rounds.destroy');
+    Route::get('/challenge/{challengeId}/edit', [ChallengeController::class, 'edit'])->name('admin.challenge.edit');
+    Route::put('/challenge/{challengeId}', [ChallengeController::class, 'update'])->name('admin.challenge.update');
+    Route::get('/challenge/{round}/create', [ChallengeController::class, 'create'])->name('admin.challenge.create');
+    Route::post('/challenge', [ChallengeController::class, 'store'])->name('admin.challenge.store');
+    Route::delete('/challenge/{challengeId}', [ChallengeController::class, 'destroy'])->name('admin.challenge.delete');
+    Route::put('/challenge/{challengeId}', [ChallengeController::class, 'update'])->name('admin.challenge.update');
 
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/challenge', [ChallengeController::class, 'index'])->name('challenge.index');
+});

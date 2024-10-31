@@ -17,7 +17,8 @@ class Challenge extends Model
     protected $fillable = [
         'name',
         'description',
-        'type'
+        'type',
+        'round_id'
     ];
 
     public function round()

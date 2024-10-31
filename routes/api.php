@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Auth::shouldUse('auth0-api');
 
 Route::post('/login',[UserAuthController::class,'login']);
 Route::post('/logout',[UserAuthController::class,'logout'])
@@ -65,25 +64,4 @@ Route::get('/', function () {
         'token' => auth()?->user()?->getAttributes(),
     ]);
 });
-
-Route::get('/me', function () {
-    $user = auth()->id();
-    $profile = cache()->get($user);
-
-    if (null === $profile) {
-        $endpoint = Auth0::management()->users();
-        $profile = $endpoint->get($user);
-        $profile = Auth0::json($profile);
-
-        cache()->put($user, $profile, 120);
-    }
-
-    $name = $profile['name'] ?? 'Unknown';
-    $email = $profile['email'] ?? 'Unknown';
-
-    return response()->json([
-        'name' => $name,
-        'email' => $email,
-    ]);
-})->middleware('auth');
 

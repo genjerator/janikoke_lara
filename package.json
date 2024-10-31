@@ -6,9 +6,18 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@headlessui/react": "^1.4.2",
+        "@inertiajs/react": "^1.0.0",
+        "@tailwindcss/forms": "^0.5.3",
+        "@vitejs/plugin-react": "^4.2.0",
+        "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
         "chokidar": "^3.6.0",
         "laravel-vite-plugin": "^1.0.0",
+        "postcss": "^8.4.31",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "tailwindcss": "^3.2.1",
         "vite": "^5.0.0"
     },
     "dependencies": {
@@ -17,9 +26,9 @@
         "@inertiajs/react": "^1.0.16",
         "@vitejs/plugin-react": "^4.2.1",
         "@zendeskgarden/react-buttons": "^8.76.2",
+        "@zendeskgarden/react-forms": "^8.76.7",
+        "@zendeskgarden/react-grid": "^8.76.7",
         "@zendeskgarden/react-tables": "^8.76.2",
-        "@zendeskgarden/react-theming": "^8.76.2",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1"
+        "@zendeskgarden/react-theming": "^8.76.2"
     }
 }

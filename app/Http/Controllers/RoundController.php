@@ -38,9 +38,9 @@ class RoundController extends Controller
     {
         $user = Auth::user();
 
-        $challenge = Challenge::findOrFail(request('challenge_id'));
-        $area = Area::findOrFail(request('area_id'));
-        $ok = $this->insideAreaService->proccess($user, $challenge, $area);
+//        $challenge = Challenge::findOrFail(request('challenge_id'));
+//        $area = Area::findOrFail(request('area_id'));
+        $ok = $this->insideAreaService->process($user, request('challenge_id'), request('area_id'));
         $message = ['status'=>$ok];
         return new JsonResponse($message, Response::HTTP_CREATED);
     }

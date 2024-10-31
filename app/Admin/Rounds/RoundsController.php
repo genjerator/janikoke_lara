@@ -18,12 +18,12 @@ class RoundsController extends Controller
     {
 
         $rounds = Round::with("challenges.areas")->get();
-        return Inertia::render('Rounds/Index', ['rounds' => $rounds]);
+        return Inertia::render('Admin/Rounds/Index', ['rounds' => $rounds]);
     }
 
     public function create()
     {
-        return Inertia::render('Rounds/Create');
+        return Inertia::render('Admin/Rounds/Create');
     }
 
     public function store(Request $request)
@@ -41,7 +41,7 @@ class RoundsController extends Controller
 
     public function edit(Round $round)
     {
-        return Inertia::render('Rounds/Edit', ['round' => $round]);
+        return Inertia::render('Admin/Rounds/Edit', ['round' => $round]);
     }
 
     public function update(Request $request, Round $round)
