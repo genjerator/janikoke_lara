@@ -13,19 +13,20 @@ import {useForm} from "@inertiajs/react";
 
 const ChallengeForm = ({ challenge = {}, onSubmit }) => {
 
-    const {data, setData, post,put, errors, processing} = useForm({
-        id: challenge.id,
-        name: challenge.name,
-        description: challenge.description,
-        active: challenge.active,
-        round_id: challenge.round_id,
-        type: challenge.type,
+    const {data, setData, post, errors, processing} = useForm({
+        id: challenge.id || '',
+        name: challenge.name || '',
+        description: challenge.description || '',
+        active: challenge.active || false,
+        round_id: challenge.round_id || '',
+        type: challenge.type || '',
     })
     console.log(data)
-    console.log(errors.name)
+
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        onSubmit(data);
+        console.log("errors", errors);
+        onSubmit(data,errors);
     };
 
     return (
@@ -81,7 +82,7 @@ const ChallengeForm = ({ challenge = {}, onSubmit }) => {
                         >
                             <option value="zigzag">Zigzag</option>
                             <option value="ten_each">Teneach</option>
-                            {/* Add more options if needed */}
+
                         </Select>
                     </Field>
                 </Col>

@@ -5,10 +5,8 @@ namespace App\Admin\Challenge;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChallengeRequest;
 use App\Http\Services\InsideAreaService;
-use App\Models\Area;
 use App\Models\Challenge;
 use App\Models\Round;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ChallengeController extends Controller
@@ -42,18 +40,12 @@ class ChallengeController extends Controller
 
         $challenge = new Challenge();
 
-        // Retrieve validated data from the request
         $validatedData = $request->validated();
 
-        // Assign the validated data to the Challenge model
         $challenge->fill($validatedData);
 
-        // Save the challenge into the database
         $challenge->save();
-        dd($challenge);
-        // Redirect or return response
-        //return redirect()->route('admin.challenge.edit',['challengeId'=>$challenge->id])->with('success', 'Challenge created successfully.');
-
+        return redirect()->route('admin.challenge.edit',['challengeId'=>$challenge->id])->with('success', 'Challenge created successfully.');
     }
 
     public function update(ChallengeRequest $request, $id)

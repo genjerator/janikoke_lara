@@ -9,20 +9,22 @@ const Edit = ({round}) => {
         "name": "",
         "description": "",
         "active": true,
-        "round_id": round.id
+        "round_id": round.id,
+        "type": "zigzag"
     }
-    const handleSubmit = (data) => {
+    const handleSubmit = (data,errors) => {
         // Handle form submission with formData
         console.log(data, "Submitted Data for Editing");
-        Inertia.post(`/admin/challenge`, data, {
-            onSuccess: () => {
-                console.log("Challenge updated successfully");
-
-            },
-            onError: (errors) => {
-                console.log("Error updating challenge:", errors);
-            }
-        });
+        console.log(errors, "Submitted Data for Editing");
+        // Inertia.post(`/admin/challenge`, data, {
+        //     onSuccess: () => {
+        //         console.log("Challenge updated successfully");
+        //
+        //     },
+        //     onError: (errors) => {
+        //         console.log("Error updating challenge:", errors);
+        //     }
+        // });
     };
     return (
         <div>
@@ -30,6 +32,7 @@ const Edit = ({round}) => {
             <div>
                 <ChallengeForm challenge={challenge} onSubmit={handleSubmit}></ChallengeForm>
             </div>
+
         </div>
     );
 };
