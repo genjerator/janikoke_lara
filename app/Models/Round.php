@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\isActiveScope;
+use App\Models\HasIsActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Round extends Model
 {
-    use HasFactory;
+    use HasFactory, HasIsActiveScope;
     protected string $name;
     protected string $description;
     protected \DateTimeImmutable $starts_at;
@@ -28,11 +30,8 @@ class Round extends Model
         return $this->hasMany(Challenge::class);
     }
 
-    /**
-     * @return HasMany
-     */
-    public function activeChallenges():HasMany
+    public function scopeOnlyActive($query)
     {
-        return $this->hasMany(Challenge::class)->active();
+        return $query->withGlobalScope('is_active', new IsActiveScope);
     }
 }

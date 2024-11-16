@@ -6,6 +6,8 @@ use App\Filament\Resources\AreaResource\Pages;
 use App\Filament\Resources\AreaResource\RelationManagers;
 use App\Forms\Components\LatLngJsonField;
 use App\Models\Area;
+use App\Models\Challenge;
+use App\Models\Round;
 use Filament\Forms;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -40,14 +43,10 @@ class AreaResource extends Resource
                     ->rows(4)
                     ->placeholder('Enter a description'),
 
-
-
-
-            LatLngJsonField::make('json_polygon')  // Field name will be 'area_json'
-                ->label('Area Coordinates (Lat/Lng JSON)')
+                LatLngJsonField::make('json_polygon')
+                    ->label('Area Coordinates (Lat/Lng JSON)')
                     ->required()
                     ->helperText('Enter the area coordinates as a JSON array of objects with latitude and longitude.')
-                    ->reactive(), // Optional: Make it reactive for dynamic changes
                 // other fields
             ]);
     }
@@ -62,8 +61,16 @@ class AreaResource extends Resource
                     ->searchable(),
                 TextColumn::make('description')
                     ->label('Descriptionsss')
-                    ->limit(50) // Limits the description text length in the listing
-                    ->wrap(),   // Wraps text if it's too long to fit in a single line
+                    ->limit(50)
+                    ->wrap(),
+                ToggleColumn::make('is_active')
+                    ->label('Active Status')
+                    ->onColor('success')
+                    ->offColor('secondary')
+                    ->action(function (Area $record) {
+                        $record->is_active = !$record->is_active;
+                        $record->save();
+                    }),
             ])
             ->filters([
                 //

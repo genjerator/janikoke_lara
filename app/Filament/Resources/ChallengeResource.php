@@ -14,6 +14,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -74,6 +75,14 @@ class ChallengeResource extends Resource
                     ->label('Description')
                     ->limit(50) // Limits the description text length in the listing
                     ->wrap(),   // Wraps text if it's too long to fit in a single line
+                ToggleColumn::make('is_active')
+                    ->label('Active Status')
+                    ->onColor('success')
+                    ->offColor('secondary')
+                    ->action(function (Challenge $record) {
+                        $record->is_active = !$record->is_active;
+                        $record->save();
+                    }),
             ])
             ->filters([
                 //

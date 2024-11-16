@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,6 +38,14 @@ class RoundResource extends Resource
                     ->required()
                     ->rows(4)
                     ->placeholder('Enter a description'),
+                ToggleColumn::make('is_active')
+                    ->label('Active Status')
+                    ->onColor('success')
+                    ->offColor('secondary')
+                    ->action(function (Round $record) {
+                        $record->is_active = !$record->is_active;
+                        $record->save();
+                    }),
             ]);
     }
 

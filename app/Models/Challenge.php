@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ChallengeTypeEnum;
+use App\Models\HasIsActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -10,7 +11,7 @@ use Illuminate\Database\Query\Builder;
 
 class Challenge extends Model
 {
-    use HasFactory;
+    use HasFactory, HasIsActiveScope;
 
     protected string $name;
     protected string $description;
@@ -53,11 +54,6 @@ class Challenge extends Model
             'Zigzag' => ChallengeTypeEnum::Zigzag->value,
             default => ChallengeTypeEnum::Zigzag->value,
         };
-    }
-
-    public function scopeActive( $query)
-    {
-        return $query->where('active', true);
     }
 
 }

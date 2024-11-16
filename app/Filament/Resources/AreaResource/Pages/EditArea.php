@@ -20,20 +20,18 @@ class EditArea extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+        protected function mutateFormDataBeforeSave(array $data): array
     {
-        $json = json_decode($data['json_polygon'],true);
-// Map each point to a MatanYadaev\EloquentSpatial\Objects\Point object
-        $points = collect($json)->map(fn ($coordinates) => new Point($coordinates['latitude'], $coordinates['longitude']));
+        $json = json_decode($data['json_polygon'], true);
+        if ($json[0] !== $json[count($json) - 1]) {
+            array_push($json,$json[0]);
+        }
+        $points = collect($json)->map(fn($coordinates) => new Point($coordinates['lat'], $coordinates['lng']));
 
-// Create a LineString object with the mapped points
         $lineString = new LineString($points);
-
-// Create a Polygon object using the LineString
         $polygon = new Polygon([$lineString]);
-
-// Dump the Polygon object
         $data['area'] = $polygon;
+        unset($data['json_polygon']);
 
         return $data;
     }

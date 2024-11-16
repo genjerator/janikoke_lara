@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\HasIsActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -12,16 +11,15 @@ use MatanYadaev\EloquentSpatial\Objects\Polygon;
 
 class Area extends Model
 {
-    use HasFactory;
+    use HasFactory, HasIsActiveScope;
 
     protected $fillable = [
         'name',
         'description',
         'location',
-        'area',
-        'polygon'
+        'area'
     ];
-    protected $appends= ['json_polygon'];
+    //protected $appends= ['json_polygon'];
     protected $casts = [
         'location' => Point::class,
         'area' => Polygon::class,
@@ -36,14 +34,12 @@ class Area extends Model
         $lineString = $this->area->getGeometries()[0];
 
         $points = $lineString->getGeometries();
-
-
         $coordinates = $points->map(fn ($point) => [
-            'latitude' => $point->latitude,
-            'longitude' => $point->longitude,
+            'lat' => $point->latitude,
+            'lng' => $point->longitude,
         ])->toArray();
 
-        return json_encode($coordinates, JSON_PRETTY_PRINT);
+        return json_encode($coordinates);
     }
 
     public function challenges()
@@ -55,4 +51,5 @@ class Area extends Model
     {
         return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
     }
+
 }
