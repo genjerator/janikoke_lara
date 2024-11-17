@@ -21,7 +21,6 @@ class AreaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //dd($this->resource->area->getCoordinates());
         return [
             'id' => $this->resource->id,
             'name' => $this->resource->name,
@@ -29,8 +28,8 @@ class AreaResource extends JsonResource
             'polygons' => array_map(
                 function ($coordinate) {
                     return [
-                        'latitude' => $coordinate[0],
-                        'longitude' => $coordinate[1]
+                        'longitude' => $coordinate[0],
+                        'latitude' => $coordinate[1]
                     ];
                 }
             ,$this->resource->area->getCoordinates()[0]),
