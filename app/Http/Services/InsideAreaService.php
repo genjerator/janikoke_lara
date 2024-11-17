@@ -76,10 +76,11 @@ class InsideAreaService
             ->join('user_challenge_area as uca', 'uca.challenge_area_id', '=', 'ca.id')
             ->join('areas as a', 'a.id', '=', 'ca.area_id')
             ->where('uca.user_id', $user->id)
+            ->where('c.is_active',true)
+            ->where('a.is_active',true)
             ->orderBy('c.id', 'asc')
             ->orderBy('time', 'desc')
             ->get();
-
         return $results->keyBy('cidaid');
     }
 

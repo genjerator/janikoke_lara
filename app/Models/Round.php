@@ -34,4 +34,8 @@ class Round extends Model
     {
         return $query->withGlobalScope('is_active', new IsActiveScope);
     }
+    public function activeChallenges():HasMany
+    {
+        return $this->hasMany(Challenge::class)->active();
+    }
 }
