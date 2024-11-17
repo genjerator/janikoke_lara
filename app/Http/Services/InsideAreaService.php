@@ -149,8 +149,8 @@ class InsideAreaService
             $points = [];
             foreach ($coordinates as $coordinate) {
                 $points[] = [
-                    'latitude' => $coordinate[1], // Latitude
-                    'longitude' => $coordinate[0], // Longitude
+                    'latitude' => $coordinate[0], // Latitude
+                    'longitude' => $coordinate[1], // Longitude
                 ];
             }
             $areas = [
