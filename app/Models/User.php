@@ -2,15 +2,35 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    public const TYPE_GUEST = 0;
+    public const TYPE_USER = 1;
+    public const TYPE_ADMIN = 2;
+
+    public function getTypeLabelAttribute()
+    {
+        return match ($this->type) {
+            self::TYPE_GUEST => 'Guest',
+            self::TYPE_USER => 'User',
+            self::TYPE_ADMIN => 'Admin',
+            default => 'Unknown',
+        };
+    }
+
+    public function isAdmin()
+    {
+        return $this->type === self::TYPE_ADMIN;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +51,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'type'
     ];
 
     /**
@@ -47,5 +68,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(ChallengeArea::class, 'user_challenge_area')
             ->withTimestamps();
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin();
     }
 }
