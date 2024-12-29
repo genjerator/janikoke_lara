@@ -15,15 +15,21 @@
             placeholder='[{"lat": "12.345", "lng": "67.890"}]'
             rows="5"
         ></textarea>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{ config('google.maps.key') }}"></script>
+        <script type="text/javascript"
+                src="https://maps.googleapis.com/maps/api/js?key={{ config('google.maps.key') }}"></script>
 
         <!-- Google Maps container -->
         <div id="map" style="width: 100%; height: 400px;" class="mt-4"></div>
     </div>
     @php
 
-    $area = $field->getRecord();
-    $polygonCoordinates = $area->getJsonPolygonAttribute();
+    $area = $field?->getRecord();
+    $polygonCoordinates = $area?->getJsonPolygonAttribute();
+    if(empty($polygonCoordinates)){
+
+        $polygonCoordinates = '[{"lat":45.2671,"lng":19.8335},{"lat":45.2751183,"lng":19.4724121},{"lat":45.5,"lng":19.5},{"lat":45.2671,"lng":19.8335}]';
+    }
+
     @endphp
     <script>
         function googleMapHandler() {
@@ -85,7 +91,8 @@
                     this.$refs.polygonTextarea.value = jsonString;
 
                     // Update Livewire state
-                @this.set('{{ $getStatePath() }}', jsonString);
+                @this.set('{{ $getStatePath() }}', jsonString)
+                    ;
                 },
             };
         }
