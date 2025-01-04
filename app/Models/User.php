@@ -51,7 +51,8 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
-        'type'
+        'type',
+        'email_verified_at'
     ];
 
     /**
@@ -73,5 +74,10 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->isAdmin();
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
 }

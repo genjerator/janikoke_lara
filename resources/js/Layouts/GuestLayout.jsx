@@ -3,7 +3,7 @@ import NavLink from "@/Components/NavLink.jsx";
 
 export default function Guest({ children }) {
     return (
-        <div className="flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div className="w-full flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                 <NavLink href={route('admin')} active={route().current('admin')}>
                     Dashboard

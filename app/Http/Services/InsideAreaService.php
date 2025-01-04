@@ -4,8 +4,6 @@ namespace App\Http\Services;
 
 use App\Enums\ChallengeTypeEnum;
 use App\Http\Resources\ChallengeResource;
-use App\Models\Area;
-use App\Models\Challenge;
 use App\Models\ChallengeArea;
 use App\Models\Round;
 use App\Models\User;

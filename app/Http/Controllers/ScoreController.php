@@ -2,17 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\InsidePolygonRequest;
-use App\Http\Resources\ScoreResource;
-use App\Http\Services\InsideAreaService;
 use App\Http\Services\ScoreService;
-use App\Models\Area;
-use App\Models\Challenge;
 use App\Models\Round;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\Response;
+use Inertia\Inertia;
 
 class ScoreController extends Controller
 {
@@ -25,5 +19,11 @@ class ScoreController extends Controller
         $user = Auth::user();
         $scores = $this->scoreService->collectScoresForUserPerRoundRaw($round, $user);
         return $scores;
+    }
+
+    public function toplist(Round $round)
+    {
+        $scores = $this->scoreService->collectScoresPerRoundGroupedByUser($round);
+        return new JsonResponse($scores);
     }
 }

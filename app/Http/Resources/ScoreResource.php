@@ -19,14 +19,15 @@ class ScoreResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "challenge_id"=> $this->resource->challengeArea->challenge->id,
-            "area_id"=>$this->resource->challengeArea->area->id,
-            "challenge_name"=> $this->resource->challengeArea->challenge->name,
-            "challenge_type"=> $this->resource->challengeArea->challenge->type,
-            "challenge_description"=> $this->resource->challengeArea->challenge->description,
-            "area_name"=> $this->resource->challengeArea->area->id,
-            "time"=> strtotime($this->resource->created_at),
-            "points"=>$this->resource->amount
+            "challenge_id" => $this->resource->challengeArea->challenge->id,
+            "area_id" => $this->resource->challengeArea->area->id,
+            "user" => $this->resource->user->name,
+            "challenge_name" => $this->resource->challengeArea->challenge->name,
+            "challenge_type" => $this->resource->challengeArea->challenge->type,
+            "challenge_description" => $this->resource->challengeArea->challenge->description,
+            "area_name" => $this->resource->challengeArea->area->id,
+            "time" => strtotime($this->resource->created_at),
+            "points" => $this->resource->amount
         ];
     }
 }

@@ -4,7 +4,6 @@ use App\Http\Controllers\RoundController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\UserAuthController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login',[UserAuthController::class,'login']);
 Route::post('/logout',[UserAuthController::class,'logout'])
     ->middleware('auth:sanctum');
+Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
 
 Route::middleware(['auth:sanctum','auth'])->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
