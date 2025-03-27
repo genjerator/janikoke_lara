@@ -25,6 +25,17 @@ docker exec -it frank1-pgsql-1 psql -U postgres
 sail down -v
 sail build --no-cache
 sail up -d
+change .env
+
+#abura
+DB_CONNECTION=pgsql
+DB_HOST=pgsql
+DB_PORT=5432
+DB_DATABASE=***
+DB_USERNAME=****
+DB_PASSWORD=******
+
+sail artisan optimize:clear
 
 inertia
 
