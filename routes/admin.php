@@ -26,15 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/rounds/{round}/edit', [RoundsController::class, 'edit'])->name('admin.rounds.edit');
     Route::put('/rounds/{round}', [RoundsController::class, 'update'])->name('rounds.update');
     Route::delete('/rounds/{round}', [RoundsController::class, 'destroy'])->name('rounds.destroy');
-    Route::get('/challenge/{challengeId}/edit', [ChallengeController::class, 'edit'])->name('admin.challenge.edit');
-    Route::put('/challenge/{challengeId}', [ChallengeController::class, 'update'])->name('admin.challenge.update');
-    Route::get('/challenge/{round}/create', [ChallengeController::class, 'create'])->name('admin.challenge.create');
-    Route::post('/challenge', [ChallengeController::class, 'store'])->name('admin.challenge.store');
-    Route::delete('/challenge/{challengeId}', [ChallengeController::class, 'destroy'])->name('admin.challenge.delete');
-    Route::put('/challenge/{challengeId}', [ChallengeController::class, 'update'])->name('admin.challenge.update');
+    Route::get('/challenge/{challengeId}/edit', [RoundsController::class, 'edit'])->name('admin.challenge.edit');
+    Route::put('/challenge/{challengeId}', [RoundsController::class, 'update'])->name('admin.challenge.update');
+    Route::get('/challenge/{round}/create', [RoundsController::class, 'create'])->name('admin.challenge.create');
+    Route::post('/challenge', [RoundsController::class, 'store'])->name('admin.challenge.store');
+    Route::delete('/challenge/{challengeId}', [RoundsController::class, 'destroy'])->name('admin.challenge.delete');
+    Route::put('/challenge/{challengeId}', [RoundsController::class, 'update'])->name('admin.challenge.update');
 
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/challenge', [ChallengeController::class, 'index'])->name('challenge.index');
+    Route::get('/challenge', [RoundsController::class, 'index'])->name('challenge.index');
 });

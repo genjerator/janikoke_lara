@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ToplistController;
 use Illuminate\Foundation\Application;
@@ -26,10 +27,8 @@ Route::get('/', function () {
     ]);
 });
 
-//Route::get('/toplist', function () {
-//    return Inertia::render('Toplist', [
-//    ]);
-//});
+Route::get('/testmap', [MapController::class, 'index'])->name('map.index');
+
 Route::get('/toplist/{round}', [ToplistController::class, 'index']);
 
 Route::get('/dashboard', function () {

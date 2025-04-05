@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AreaResource\Pages;
 
 use App\Filament\Resources\AreaResource;
+use App\Models\Area;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
@@ -20,19 +21,8 @@ class EditArea extends EditRecord
         ];
     }
 
-        protected function mutateFormDataBeforeSave(array $data): array
+    protected function mutateFormDataBeforeSave(array $data): array
     {
-        $json = json_decode($data['json_polygon'], true);
-        if ($json[0] !== $json[count($json) - 1]) {
-            array_push($json,$json[0]);
-        }
-        $points = collect($json)->map(fn($coordinates) => new Point($coordinates['lat'], $coordinates['lng']));
-
-        $lineString = new LineString($points);
-        $polygon = new Polygon([$lineString]);
-        $data['area'] = $polygon;
-        unset($data['json_polygon']);
-
-        return $data;
+        return Area::createPolygonFromData($data);
     }
 }

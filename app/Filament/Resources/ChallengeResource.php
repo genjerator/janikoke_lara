@@ -60,6 +60,9 @@ class ChallengeResource extends Resource
                     ->relationship('round', 'name') // Assuming the `name` field exists in `rounds` table
                     ->required()
                     ->placeholder('Select a round'),
+                Forms\Components\Select::make('Areas')
+                    ->relationship('areas', 'name')
+                    ->multiple(),
             ]);
     }
 

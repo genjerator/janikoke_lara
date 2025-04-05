@@ -27,7 +27,8 @@
     $polygonCoordinates = $area?->getJsonPolygonAttribute();
     if(empty($polygonCoordinates)){
 
-        $polygonCoordinates = '[{"lat":45.2671,"lng":19.8335},{"lat":45.2751183,"lng":19.4724121},{"lat":45.5,"lng":19.5},{"lat":45.2671,"lng":19.8335}]';
+    $polygonCoordinates =
+    '[{"lat":45.2671,"lng":19.8335},{"lat":45.2751183,"lng":19.4724121},{"lat":45.5,"lng":19.5},{"lat":45.2671,"lng":19.8335}]';
     }
 
     @endphp
@@ -41,7 +42,7 @@
                     const polygonTextarea = this.$refs.polygonTextarea;
 
                     // Initial map configuration
-                    const initialPosition = { lat: 45.2671, lng: 19.8335 };
+                    const initialPosition = {lat: 45.2671, lng: 19.8335};
 
                     // Initialize the Google Map
                     this.map = new google.maps.Map(document.getElementById('map'), {
