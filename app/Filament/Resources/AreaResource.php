@@ -77,6 +77,19 @@ class AreaResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('clone')
+                    ->label('Clone')
+                    ->icon('heroicon-m-document-duplicate')
+                    ->action(function (Area $record): void {
+                        $newRecord = $record->replicate();
+                        $newRecord->name = $record->name . ' (Copy)';
+                        $newRecord->is_active = false;
+                        $newRecord->push();
+
+                    })
+                    ->requiresConfirmation()
+                    ->color('gray'),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
