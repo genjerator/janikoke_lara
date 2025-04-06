@@ -47,7 +47,7 @@
                     // Initialize the Google Map
                     this.map = new google.maps.Map(document.getElementById('map'), {
                         center: initialPosition,
-                        zoom: 10,
+                        zoom: 15,
                     });
 
                     var triangleCoords1 = JSON.parse('{!! $polygonCoordinates !!}');

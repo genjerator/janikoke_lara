@@ -34,6 +34,10 @@ Route::get('/toplist/{round}', [ToplistController::class, 'index']);
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/testmapi', function () {
+    return Inertia::render('Testmap');
+})->name('Testmapi');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

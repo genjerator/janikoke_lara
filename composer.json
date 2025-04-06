@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "alexpechkarev/google-maps": "^12.1",
+        "davidvandertuijn/laravel-google-maps": "^1.0",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.3",
