@@ -94,7 +94,7 @@ return [
                                                     'latlng'        => null,
                                                     'place_id'      => null,
                                                     'components'    => [
-                                                        'route'                 => null,
+                                                        'rute'                 => null,
                                                         'locality'              => null,
                                                         'administrative_area'   => null,
                                                         'postal_code'           => null,

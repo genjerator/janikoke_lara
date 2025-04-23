@@ -26,7 +26,7 @@ class Area extends Model
         'area' => Polygon::class,
     ];
 
-    public function getJsonPolygonAttribute()
+    public function getJsonPolygonAttribute(): string
     {
         if (!$this->area || !$this->area instanceof Polygon) {
             return json_encode([]);
@@ -41,6 +41,26 @@ class Area extends Model
         ])->toArray();
 
         return json_encode($coordinates);
+    }
+
+    /**
+     * Get polygon coordinates as [lat, lng] array (for Leaflet.js).
+     */
+    public function getPolygonCoordinatesForLeaflet(): array
+    {
+        if (!$this->area || !$this->area instanceof Polygon) {
+            return json_encode([]);
+        }
+
+        $lineString = $this->area->getGeometries()[0];
+
+        $points = $lineString->getGeometries();
+        $coordinates = $points->map(fn($point) => [
+            'latitude' => $point->latitude,
+            'longitude' => $point->longitude,
+        ])->toArray();
+
+        return $coordinates;
     }
 
     public function setJsonPolygonAttribute(string $json): void

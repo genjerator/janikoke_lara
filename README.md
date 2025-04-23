@@ -5,7 +5,8 @@ docker run --rm \
 laravelsail/php83-composer:latest \
 composer install --ignore-platform-reqs
 
-
+sudo usermod -aG docker laravel
+add laravel user to doceker group
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 
 

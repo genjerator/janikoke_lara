@@ -163,7 +163,7 @@ return [
     | Set if rotate control should be displayed by Laravel Google Maps.
     |
     */
-    'rotateControl' => false,
+    'rotateControl' => true,
 
     /*
     |--------------------------------------------------------------------------

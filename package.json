@@ -24,6 +24,7 @@
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "@inertiajs/react": "^1.0.16",
+        "@vis.gl/react-google-maps": "^1.5.2",
         "@vitejs/plugin-react": "^4.2.1",
         "@zendeskgarden/react-buttons": "^8.76.2",
         "@zendeskgarden/react-forms": "^8.76.7",

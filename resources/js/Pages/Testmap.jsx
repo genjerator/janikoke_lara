@@ -1,7 +1,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {Head} from '@inertiajs/react';
 
-export default function Dashboard({auth}) {
+export default function Testmap(param) {
+
+    console.log(param.map);
     return (
         <div className="h-screen flex flex-col">
 
@@ -22,7 +24,8 @@ export default function Dashboard({auth}) {
 
             {/* Map Section */}
             <main className="flex-1">
-                <div className="w-full h-full border-t border-gray-300" dangerouslySetInnerHTML={{__html: map}}/>
+
+                {/*<div className="w-full h-full border-t border-gray-300" dangerouslySetInnerHTML={{__html: map}}/>*/}
             </main>
 
         </div>

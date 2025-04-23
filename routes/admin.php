@@ -19,6 +19,7 @@ use App\Admin\Rounds\RoundsController;
 Route::get('/', function () {
     return Inertia::render('Admin/Home');
 })->name('admin');;
+
 Route::middleware('auth')->group(function () {
     Route::get('/rounds', [RoundsController::class, 'index'])->name('admin.rounds.index');
     Route::get('/rounds/create', [RoundsController::class, 'create'])->name('rounds.create');

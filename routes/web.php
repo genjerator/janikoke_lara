@@ -1,7 +1,10 @@
 <?php
 
+use App\Domains\Person\Controllers\PeopleController;
+use App\Domains\Person\Controllers\PersonController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestmapController;
 use App\Http\Controllers\ToplistController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +33,7 @@ Route::get('/', function () {
 Route::get('/testmap', [MapController::class, 'index'])->name('map.index');
 
 Route::get('/toplist/{round}', [ToplistController::class, 'index']);
+Route::get('/rrtestmap', [TestmapController::class, 'index']);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -38,6 +42,9 @@ Route::get('/testmapi', function () {
     return Inertia::render('Testmap');
 })->name('Testmapi');
 
+Route::prefix('people')->group(function () {
+    Route::get('/', [PeopleController::class, 'index']);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
