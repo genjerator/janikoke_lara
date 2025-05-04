@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Domains\Person\Services\PersonFilterService;
 use App\Models\Area;
+use Illuminate\Support\Facades\Auth;
 use Mapper;
 
 class MapController extends Controller
@@ -36,5 +37,11 @@ class MapController extends Controller
 //        })->toArray();
 
         return view('map', ['map' => $map]);
+    }
+
+    public function test()
+    {
+        $user = Auth::user();
+        dd($user->name, $user->email, $user);
     }
 }

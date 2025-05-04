@@ -10,9 +10,29 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+
 
 class ProfileController extends Controller
 {
+
+    public function index(): View|Application|Factory
+    {
+        $usera = Auth::guard('web')->user();
+//        $user = $auth0->getUser();
+        $user0 = Auth::user();
+        dd( $usera, $user0);
+
+        return view('pages.profile', [
+            'user' => $user,
+            'code' => json_encode(
+                \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
+            )
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */

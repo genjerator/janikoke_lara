@@ -2,6 +2,7 @@
 
 use App\Domains\Person\Controllers\PeopleController;
 use App\Domains\Person\Controllers\PersonController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TestmapController;
@@ -28,9 +29,10 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home');
 
 Route::get('/testmap', [MapController::class, 'index'])->name('map.index');
+Route::get('/test', [MapController::class, 'test'])->name('map.test');
 
 Route::get('/toplist/{round}', [ToplistController::class, 'index']);
 Route::get('/rrtestmap', [TestmapController::class, 'index']);
@@ -46,10 +48,9 @@ Route::prefix('people')->group(function () {
     Route::get('/', [PeopleController::class, 'index']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('web')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-require __DIR__.'/auth.php';
