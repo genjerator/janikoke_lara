@@ -22,7 +22,7 @@ Route::post('/logout',[UserAuthController::class,'logout'])
     ->middleware('auth:sanctum');
 Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
 
-Route::middleware(['auth:sanctum','web'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
 
     Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
