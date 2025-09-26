@@ -14,6 +14,8 @@ class Person extends Model
         'last_name',
         'day_of_birth',
         'day_of_die',
+        'name',
+        'description'
     ];
 
     protected $casts = [
@@ -23,5 +25,14 @@ class Person extends Model
     public function area()
     {
         return $this->belongsTo(Area::class);
+    }
+
+    public function name(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+    public function info()
+    {
+        return $this->hasOne(PeopleInfo::class, 'person_id');
     }
 }

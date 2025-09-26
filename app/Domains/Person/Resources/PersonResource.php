@@ -11,6 +11,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PersonResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * Transform the resource into an array.
      *
@@ -22,12 +24,15 @@ class PersonResource extends JsonResource
         /**
          * @var Person $person
          */
+
         return [
-            'id'            => $this->resource->id,
-            'first_name'          => $this->resource->first_name,
-            'last_name'          => $this->resource->last_name,
-            'date_of_birth'          => $person->day_of_birth,
-            'date_of_die'          => $person->day_of_birth,
+            'id' => $person->id,
+            'first_name' => $person->first_name,
+            'last_name' => $person->last_name,
+            'date_of_birth' => $person->day_of_birth->format('d.m.Y'),
+            'date_of_die' => $person->day_of_die->format('d.m.Y'),
+            'name' => $person->name(),
+            'description' => $person->description,
 
         ];
     }

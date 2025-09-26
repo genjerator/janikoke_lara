@@ -2,6 +2,7 @@
 
 namespace App\Domains\Person\Services;
 
+use App\Domains\Person\Resources\PersonResource;
 use App\Models\Person;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -29,5 +30,10 @@ class PersonFilterService extends EloquentFilter
         return $coordinates;
     }
 
+    public function getPersons()
+    {
+        return PersonResource::collection($this->getQueryBuilder()->get());
+//        return $this->getQueryBuilder()->get();
+    }
 
 }

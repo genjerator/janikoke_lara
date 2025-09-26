@@ -4,14 +4,17 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PersonResource\Pages;
 use App\Filament\Resources\PersonResource\RelationManagers;
+use App\Filament\Resources\PersonResource\RelationManagers\InfoRelationManager;
+use App\Models\PeopleInfo;
 use App\Models\Person;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PersonResource extends Resource
 {
@@ -21,16 +24,16 @@ class PersonResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name')
+                TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('last_name')
+                TextInput::make('last_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DatePicker::make('day_of_birth')
+                DatePicker::make('day_of_birth')
                     ->required(),
-                Forms\Components\DatePicker::make('day_of_die'),
-                Forms\Components\Select::make('area_id')
+                DatePicker::make('day_of_die'),
+                Select::make('area_id')
                     ->label('Area')
                     ->relationship(
                         name: 'area',
@@ -38,7 +41,15 @@ class PersonResource extends Resource
                         modifyQueryUsing: fn ($query) => $query->where('type', 2)
                     )
                     ->required()
-                    ->searchable()
+                    ->searchable(),
+                Forms\Components\TextInput::make('description')
+                    ->label('Description')
+                    ->maxLength(255)
+                    ->columnSpanFull(),
+//                Forms\Components\TextInput::make('info.description')
+//                    ->label('Description')
+//                    ->maxLength(255)
+//                    ->columnSpanFull(),
             ]);
     }
 
@@ -69,4 +80,11 @@ class PersonResource extends Resource
             'edit' => Pages\EditPerson::route('/{record}/edit'),
         ];
     }
+
+//    public static function getRelations(): array
+//    {
+//        return [
+//            PeopleInfo::class,
+//        ];
+//    }
 }
