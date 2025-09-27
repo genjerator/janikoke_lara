@@ -797,10 +797,12 @@
 <body class="antialiased">
 <div
     class="relative sm:flex sm:justify-center sm:items-center bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-    ...Андя пиє пивко...
+    ...Андя пиє пивко...aa
 </div>
 <div
     class="relative sm:flex sm:justify-center sm:items-center bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+    <p>{{ config('app.url') }}/band.jpg</p>
+    <p>{{ config('app.url') }}/band.jpgaaaa</p>
     <video
         id="my-video"
         class="video-js"

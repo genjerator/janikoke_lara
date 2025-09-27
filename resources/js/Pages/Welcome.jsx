@@ -15,11 +15,12 @@ function Welcome() {
                     id="my-video"
                     className="video-js"
                     controls
+                    autoPlay
                     preload="auto"
                     width="640"
                     height="264"
                     data-setup="{}"
-                    poster="{{ config('app.url') }}/band.jpg"
+                    poster="/band.jpg"
                 >
                     <source src="https://haligali.nullroute.stream"/>
 
