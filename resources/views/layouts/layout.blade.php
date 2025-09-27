@@ -17,9 +17,9 @@
 <footer class="bg-white shadow
     <!-- Footer -->
     <footer class="bg-white shadow-md mt-8 py-4">
-<div class="container mx-auto text-center text-gray-500">
-    <p>&copy; {{ date('Y') }} MyApp. All rights reserved.</p>
-</div>
+    <div class="container mx-auto text-center text-gray-500">
+        <p>&copy; {{ date('Y') }} MyApp. All rights reserved.</p>
+    </div>
 </footer>
 
 </body>
