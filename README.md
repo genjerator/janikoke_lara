@@ -42,7 +42,7 @@ inertia
 
 install npm
 apt install vite
-npm run build
+    npm run build
 
 db
 
