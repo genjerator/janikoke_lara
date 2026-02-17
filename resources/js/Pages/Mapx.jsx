@@ -86,13 +86,15 @@ const Mapx = (props) => {
                 style={{marginBottom: '10px'}}
             />
             <div style={{width: '100%', height: '90vh'}}>
-                <Map
-                    defaultZoom={18}
-                    mapTypeId="satellite"
-                    defaultCenter={{lat: 45.5675, lng: 19.434804832919067}}
-                >
-                    <PolygonOverlay combined={combined}/>
-                </Map>
+                <APIProvider apiKey="AIzaSyC56Te0QXLZVHcF76LVO3MNBOFnoSdVP98">
+                    <Map
+                        defaultZoom={18}
+                        mapTypeId="satellite"
+                        defaultCenter={{lat: 45.5675, lng: 19.434804832919067}}
+                    >
+                        <PolygonOverlay combined={combined}/>
+                    </Map>
+                </APIProvider>
             </div>
         </>
     );

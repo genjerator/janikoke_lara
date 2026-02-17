@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AreaTypeEnum;
 use App\Filament\Resources\PersonResource\Pages;
-use App\Filament\Resources\PersonResource\RelationManagers;
-use App\Filament\Resources\PersonResource\RelationManagers\InfoRelationManager;
-use App\Models\PeopleInfo;
 use App\Models\Person;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -38,7 +36,7 @@ class PersonResource extends Resource
                     ->relationship(
                         name: 'area',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn ($query) => $query->where('type', 2)
+                        modifyQueryUsing: fn ($query) => $query->where('type', AreaTypeEnum::TMT)
                     )
                     ->required()
                     ->searchable(),

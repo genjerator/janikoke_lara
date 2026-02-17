@@ -42,7 +42,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/testmapi', function () {
     return Inertia::render('Testmap');
-})->name('Testmapi');
+})->name('rrtestmap');
 
 Route::prefix('people')->group(function () {
     Route::get('/', [PeopleController::class, 'index']);

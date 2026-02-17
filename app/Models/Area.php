@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\HasIsActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use App\Enums\AreaTypeEnum;
 
 class Area extends Model
 {
@@ -18,24 +18,26 @@ class Area extends Model
         'name',
         'description',
         'location',
-        'area'
+        'area',
     ];
+
     //protected $appends= ['json_polygon'];
     protected $casts = [
         'location' => Point::class,
         'area' => Polygon::class,
+        'type' => AreaTypeEnum::class,
     ];
 
     public function getJsonPolygonAttribute(): string
     {
-        if (!$this->area || !$this->area instanceof Polygon) {
+        if (! $this->area || ! $this->area instanceof Polygon) {
             return json_encode([]);
         }
 
         $lineString = $this->area->getGeometries()[0];
 
         $points = $lineString->getGeometries();
-        $coordinates = $points->map(fn($point) => [
+        $coordinates = $points->map(fn ($point) => [
             'lat' => $point->latitude,
             'lng' => $point->longitude,
         ])->toArray();
@@ -48,14 +50,14 @@ class Area extends Model
      */
     public function getPolygonCoordinatesForLeaflet(): array
     {
-        if (!$this->area || !$this->area instanceof Polygon) {
+        if (! $this->area || ! $this->area instanceof Polygon) {
             return json_encode([]);
         }
 
         $lineString = $this->area->getGeometries()[0];
 
         $points = $lineString->getGeometries();
-        $coordinates = $points->map(fn($point) => [
+        $coordinates = $points->map(fn ($point) => [
             'latitude' => $point->latitude,
             'longitude' => $point->longitude,
         ])->toArray();
@@ -75,11 +77,12 @@ class Area extends Model
         if ($json[0] !== $json[count($json) - 1]) {
             array_push($json, $json[0]);
         }
-        $points = collect($json)->map(fn($coordinates) => new Point($coordinates['lat'], $coordinates['lng']));
+        $points = collect($json)->map(fn ($coordinates) => new Point($coordinates['lat'], $coordinates['lng']));
 
         $lineString = new LineString($points);
         $polygon = new Polygon([$lineString]);
         $data['area'] = $polygon;
+
         return $data;
     }
 
@@ -92,5 +95,4 @@ class Area extends Model
     {
         return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
     }
-
 }

@@ -20,47 +20,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if(!Round::where('name', 'Round1')->exists()) {
+        if (! Round::where('name', 'Round1')->exists()) {
             $round = Round::factory()->create([
                 'name' => 'Round1',
                 'description' => 'Round1',
                 'starts_at' => Carbon::now()->startOfYear(),
-                'ends_at' => Carbon::now()->endOfYear()
+                'ends_at' => Carbon::now()->endOfYear(),
             ]);
         }
-        if(!Area::where('name', 'Liman 3 parking')->exists()) {
+        if (! Area::where('name', 'Liman 3 parking')->exists()) {
             $areaParking = Area::factory()->create([
                 'name' => 'Liman 3 parking',
                 'description' => 'Liman 3 parking',
                 'point' => null,
                 'area' => new Polygon([
                     new LineString([
-                        new Point(19.8380899, 45.2376218),
-                        new Point(19.8381758, 45.2372442),
-                        new Point(19.8388731, 45.2373046),
-                        new Point(19.8388731, 45.2380372),
-                        new Point(19.8380899, 45.2376218),
+                        new Point(45.2376218, 19.8380899),
+                        new Point(45.2372442, 19.8381758),
+                        new Point(45.2373046, 19.8388731),
+                        new Point(45.2380372, 19.8388731),
+                        new Point(45.2376218, 19.8380899),
                     ]),
                 ]),
             ]);
         }
-        if(!Area::where('name', 'Liman 3 park')->exists()) {
+        if (! Area::where('name', 'Liman 3 park')->exists()) {
             $areaPark = Area::factory()->create([
                 'name' => 'Liman 3 park',
                 'description' => 'Liman 3 park',
                 'point' => null,
                 'area' => new Polygon([
                     new LineString([
-                        new Point(19.8383689, 45.2395553),
-                        new Point(19.8394525, 45.2376520),
-                        new Point(19.8425746, 45.2382940),
-                        new Point(19.8414052, 45.2402804),
-                        new Point(19.8383689, 45.2395553),
+                        new Point(45.2395553, 19.8383689),
+                        new Point(45.2376520, 19.8394525),
+                        new Point(45.2382940, 19.8425746),
+                        new Point(45.2402804, 19.8414052),
+                        new Point(45.2395553, 19.8383689),
                     ]),
                 ]),
             ]);
         }
-        if(!Challenge::where('name', 'Liman 3')->exists()) {
+        if (! Challenge::where('name', 'Liman 3')->exists()) {
             $challenge = Challenge::factory()->create([
                 'round_id' => $round->id,
                 'name' => 'Liman 3',
@@ -69,12 +69,15 @@ class DatabaseSeeder extends Seeder
 
             ChallengeArea::factory()->create([
                 'challenge_id' => $challenge->id,
-                'area_id' => $areaParking->id
+                'area_id' => $areaParking->id,
             ]);
             ChallengeArea::factory()->create([
                 'challenge_id' => $challenge->id,
-                'area_id' => $areaPark->id
+                'area_id' => $areaPark->id,
             ]);
         }
+        $this->call([
+            AreaSeeder::class,
+        ]);
     }
 }

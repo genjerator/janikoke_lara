@@ -4,7 +4,7 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-// import { APIProvider } from '@vis.gl/react-google-maps'; // Import APIProvider
+import { APIProvider } from '@vis.gl/react-google-maps'; // Import APIProvider
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -15,7 +15,9 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={['geometry']} onLoad={() => console.log('Maps API has loaded.')}>
                 <App {...props} />
+            </APIProvider>
         );
     },
     progress: {
