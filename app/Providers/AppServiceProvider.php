@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Domains\Person\Services\PersonFilterService;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if ($this->app->environment('production') || env('FORCE_HTTPS', false)) {
+            URL::forceScheme('https');
+        }
     }
 }
