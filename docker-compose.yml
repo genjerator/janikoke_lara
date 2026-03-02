@@ -40,7 +40,30 @@ services:
             test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
             retries: 3
             timeout: 5s
-
+#    google-auth-service:
+#        build:
+#            context: ./google-auth-service
+#            dockerfile: Dockerfile
+#        ports:
+#            - "8081:8080"
+#        env_file:
+#            - ./google-auth-service/.env
+#        restart: always
+#        depends_on:
+#            - pgsql
+#        networks:
+#            - sail
+    # google-auth-service:
+    #     build:
+    #         context: .                                    # parent folder as context
+    #         dockerfile: google-auth-service/Dockerfile
+    #     restart: always
+    #     ports:
+    #         - "8081:8080"
+    #     networks:
+    #         - sail
+    #     depends_on:
+    #         - pgsql
 #    ngrok:
 #        image: 'ngrok/ngrok:alpine'
 #        environment:

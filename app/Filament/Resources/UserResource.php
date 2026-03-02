@@ -3,20 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Forms\Components\LatLngJsonField;
 use App\Models\User;
-use Filament\Facades\Filament;
-use Filament\Forms;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
@@ -40,7 +32,7 @@ class UserResource extends Resource
                 TextInput::make('password')
                     ->label('Password')
                     ->password()
-                    ->required()
+                    ->required(),
             ]);
     }
 
@@ -49,15 +41,33 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name ss')
+                    ->label('Name')
                     ->sortable()
-                    ->searchable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email_verified_at')
+                    ->label('Verified At')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make('toggleActivate')
+                    ->label(fn ($record) => $record->email_verified_at ? 'Deactivate' : 'Activate')
+                    ->icon(fn ($record) => $record->email_verified_at ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->color(fn ($record) => $record->email_verified_at ? 'danger' : 'success')
+                    ->action(function ($record) {
+                        $record->email_verified_at = $record->email_verified_at ? null : now();
+                        $record->save();
+
+                        \Filament\Notifications\Notification::make()
+                            ->title($record->email_verified_at ? 'User Activated' : 'User Deactivated')
+                            ->color($record->email_verified_at ? 'success' : 'danger')
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

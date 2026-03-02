@@ -195,8 +195,7 @@ class InsideAreaService
     }
 
     public function updateAreaZigzag(array &$areas, $challengeId, $results): array
-    {
-
+    {   
         $grouped = $results->groupBy('challenge_id');
         $grouped = $grouped->map(function ($challenges) {
             return $challenges->values()->map(function ($challenge, $index) {
