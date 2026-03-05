@@ -7,7 +7,6 @@ use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TestmapController;
 use App\Http\Controllers\ToplistController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -35,6 +34,8 @@ Route::get('/testmap', [MapController::class, 'index'])->name('map.index');
 Route::get('/test', [MapController::class, 'test'])->name('map.test');
 
 Route::get('/toplist/{round}', [ToplistController::class, 'index']);
+Route::get('/ranking', [ToplistController::class, 'ranking'])->name('ranking.index');
+Route::get('/ranking/last30days', [ToplistController::class, 'rankingLast30Days'])->name('ranking.last30days');
 Route::get('/rrtestmap', [TestmapController::class, 'index']);
 
 Route::get('/dashboard', function () {

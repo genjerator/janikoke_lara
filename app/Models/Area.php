@@ -95,4 +95,9 @@ class Area extends Model
     {
         return $this->hasManyThrough(UserChallengeArea::class, ChallengeArea::class);
     }
+
+    public function prices()
+    {
+        return $this->hasMany(AreaPrize::class);
+    }
 }
