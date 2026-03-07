@@ -17,7 +17,7 @@ jobs:
           script: |
             cd /var/www/janikoke_lara
             git pull origin main
-#            sail composer install --no-dev --optimize-autoloader
+            sail composer install --no-dev --optimize-autoloader
             sail artisan migrate
             sail artisan optimize
             npm run build
