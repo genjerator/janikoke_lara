@@ -17,7 +17,9 @@ jobs:
           script: |
             cd /home/ubuntu/janikoke_lara
             git pull origin main
-            sail composer install --no-dev --optimize-autoloader
-            sail artisan migrate
-            sail artisan optimize
+            ./vendor/bin/ composer install --no-dev --optimize-autoloader
+            ./vendor/bin/sail artisan migrate
+            ./vendor/bin/ artisan optimize
+            ./vendor/bin/ artisan challenges:update-center-points
+            ./vendor/bin/ artisan areas:update-centroids
             npm run build
