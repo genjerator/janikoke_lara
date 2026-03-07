@@ -9,7 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('challenges', function (Blueprint $table) {
-            $table->point('center_point')->isGeometry()->nullable();
+            if (!Schema::hasColumn('challenges', 'center_point')) {
+                $table->point('center_point')->isGeometry()->nullable();
+            }
         });
     }
 
