@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/janikoke_lara
+            cd /home/ubuntu/janikoke_lara
             git pull origin main
             sail composer install --no-dev --optimize-autoloader
             sail artisan migrate
