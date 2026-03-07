@@ -25,6 +25,10 @@ class AreaResource extends JsonResource
             'id' => $this->resource->id,
             'name' => $this->resource->name,
             'description' => $this->resource->description,
+            'center_point' => [
+                'longitude' => $this->resource->point->longitude,
+                'latitude' => $this->resource->point->latitude,
+            ],
             'polygons' => array_map(
                 function ($coordinate) {
                     return [

@@ -25,6 +25,7 @@ class Area extends Model
     protected $casts = [
         'location' => Point::class,
         'area' => Polygon::class,
+        'point' => Point::class,
         'type' => AreaTypeEnum::class,
     ];
 
