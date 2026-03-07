@@ -19,7 +19,7 @@ jobs:
             git pull origin main
             ./vendor/bin/ composer install --no-dev --optimize-autoloader
             ./vendor/bin/sail artisan migrate
-            ./vendor/bin/ artisan optimize
-            ./vendor/bin/ artisan challenges:update-center-points
-            ./vendor/bin/ artisan areas:update-centroids
+            ./vendor/bin/sail artisan optimize
+            ./vendor/bin/sail artisan challenges:update-center-points
+            ./vendor/bin/sail artisan areas:update-centroids
             npm run build
