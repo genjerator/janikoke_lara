@@ -26,6 +26,10 @@ class ChallengeResource extends JsonResource
             'name' => $this->resource->name,
             'type'=>$this->resource->type,
             'description' => $this->resource->description,
+            'center_point' => [
+                'longitude' => $this->resource->center_point->longitude,
+                'latitude' => $this->resource->center_point->latitude,
+            ],
             'areas' => AreaResource::collection($areas),
         ];
     }

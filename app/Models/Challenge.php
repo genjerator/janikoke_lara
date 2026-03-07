@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Query\Builder;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class Challenge extends Model
 {
@@ -22,6 +23,9 @@ class Challenge extends Model
         'round_id'
     ];
 
+    protected $casts = [
+        'center_point' => Point::class,
+    ];
     public function round()
     {
         return $this->belongsTo(Round::class);
