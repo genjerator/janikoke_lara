@@ -1,26 +1,37 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
-var db *sql.DB
+var oauthConfig *oauth2.Config
 
 func main() {
-	// Load Laravel's .env from one folder up
 	if err := godotenv.Load("../.env"); err != nil {
 		log.Println("No ../.env file found, falling back to environment variables")
 	}
 
-	// Connect to DB
+	// Configure Google OAuth2
+	oauthConfig = &oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("GOOGLE_REDIRECT_URL"), // e.g. http://localhost:8080/auth/google/callback
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email",
+			"https://www.googleapis.com/auth/userinfo.profile",
+		},
+		Endpoint: google.Endpoint,
+	}
+
 	var err error
 	db, err = connectDB()
 	if err != nil {
@@ -29,6 +40,16 @@ func main() {
 		log.Println("Connected to PostgreSQL!")
 	}
 
+	// Background goroutine to clean up expired sessions
+	go func() {
+		for range time.Tick(10 * time.Minute) {
+			purgeExpiredSessions()
+		}
+	}()
+
+	rateLimiter := newRateLimiterFromEnv()
+	rateLimiter.startCleanup(5 * time.Minute)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -36,78 +57,43 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"message": "Hello from Go!",
-			"status":  "ok",
-		})
+		json.NewEncoder(w).Encode(map[string]string{"message": "Hello from Go!", "status": "ok"})
 	})
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
-			"status": "healthy",
-		})
+		json.NewEncoder(w).Encode(map[string]string{"status": "healthy"})
 	})
 
 	http.HandleFunc("/db-check", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-
+		db, err = connectDB()
+		fmt.Println("db")
 		if db == nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status": "error",
-				"error":  "database not initialized",
-			})
+			json.NewEncoder(w).Encode(map[string]string{"status": "error", "error": "database not initialized"})
 			return
 		}
-
 		if err := db.Ping(); err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status": "error",
-				"error":  err.Error(),
-			})
+			json.NewEncoder(w).Encode(map[string]string{"status": "error", "error": err.Error()})
 			return
 		}
-
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":   "ok",
-			"database": "connected",
-		})
+		json.NewEncoder(w).Encode(map[string]string{"status": "ok", "database": "connected"})
 	})
+
+	// Step 1: Redirect user to Google's consent screen
+	http.HandleFunc("/auth/google", rateLimiter.middleware(handleGoogleAuth))
+
+	// Step 2: Google redirects back here with a code
+	http.HandleFunc("/auth/google/callback", rateLimiter.middleware(handleGoogleCallback))
+
+	// Logout: destroy the session
+	http.HandleFunc("/auth/logout", rateLimiter.middleware(handleLogout))
+
+	// Example protected route
+	http.HandleFunc("/me", rateLimiter.middleware(requireSession(handleMe)))
 
 	fmt.Printf("Server running on port %s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-}
-
-func connectDB() (*sql.DB, error) {
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	name := os.Getenv("DB_DATABASE")
-	user := os.Getenv("DB_USERNAME")
-	password := os.Getenv("DB_PASSWORD")
-	sslmode := os.Getenv("DB_SSLMODE")
-
-	if sslmode == "" {
-		sslmode = "disable"
-	}
-	if port == "" {
-		port = "5432"
-	}
-
-	dsn := fmt.Sprintf(
-		"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
-		host, port, name, user, password, sslmode,
-	)
-
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }
