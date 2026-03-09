@@ -24,6 +24,6 @@ jobs:
             ./vendor/bin/sail artisan optimize
             ./vendor/bin/sail artisan challenges:update-center-points
             ./vendor/bin/sail artisan areas:update-centroids
-            npm run build
             docker compose -f docker-compose.yml build google-auth-service
             docker compose -f docker-compose.yml up -d google-auth-service
+            npm run build

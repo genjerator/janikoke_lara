@@ -2,7 +2,7 @@ import React from "react";
 import Guest from "@/Layouts/GuestLayout.jsx";
 
 function Welcome() {
-    const googleAuthUrl = import.meta.env.VITE_GOOGLE_AUTH_URL || "http://localhost:8080/auth/google";
+    const googleAuthUrl = import.meta.env.VITE_GOOGLE_AUTH_URL || "notset";
 
     return (
         <>
