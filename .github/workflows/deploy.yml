@@ -19,9 +19,7 @@ jobs:
             set -e
             cd /home/ubuntu/janikoke_lara
             git pull origin main
-            docker compose -f docker-compose.yml build google-auth-service
-            docker compose -f docker-compose.yml up -d google-auth-service
-            ./vendor/bin/sail artisan migrate --force
+            ./vendor/bin/sail artisan migrate
             ./vendor/bin/sail artisan optimize
             ./vendor/bin/sail artisan challenges:update-center-points
             ./vendor/bin/sail artisan areas:update-centroids
