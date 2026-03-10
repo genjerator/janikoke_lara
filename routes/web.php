@@ -62,22 +62,3 @@ Route::middleware(['web', 'google.auth'])->group(function () {
     // Route::get('/google-dashboard', [GoogleDashboardController::class, 'index']);
 });
 
-// Google logout — clears Go session and removes session_id cookie
-Route::post('/auth/google/logout', function (Request $request) {
-    $sessionId    = $request->cookie('session_id');
-    $goServiceUrl = rtrim(env('GO_AUTH_SERVICE_URL', 'http://localhost:8080'), '/');
-
-    if ($sessionId) {
-        try {
-            Http::withCookies(['session_id' => $sessionId], parse_url($goServiceUrl, PHP_URL_HOST))
-                ->timeout(2)
-                ->post($goServiceUrl . '/auth/logout');
-        } catch (\Throwable $e) {
-            // Go service unreachable — proceed with clearing cookie anyway
-        }
-    }
-
-    return redirect()->route('home')
-        ->withCookie(cookie()->forget('session_id'));
-})->name('google.logout');
-
