@@ -24,7 +24,7 @@ var (
 func laravelURL(path string) string {
 	base := os.Getenv("LARAVEL_APP_URL")
 	if base == "" {
-		base = "http://localhost"
+		base = "http://janikoke.com"
 	}
 	return base + path
 }
