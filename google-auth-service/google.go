@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -79,14 +80,16 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	// Upsert: find existing user or create a new one (auto-register)
 	user, err := upsertUser(googleUser)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "database error")
+		log.Printf("ERROR: upsertUser failed: %v", err)
+		writeError(w, http.StatusInternalServerError, "database error: "+err.Error())
 		return
 	}
 
 	// Create server-side session
 	sessionID, err := createSession(user)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create session")
+		log.Printf("ERROR: createSession failed: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to create session: "+err.Error())
 		return
 	}
 

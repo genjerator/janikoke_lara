@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -52,10 +53,14 @@ func connectDB() (*sql.DB, error) {
 }
 
 func upsertUserImpl(g *googleapi.Userinfo) (*User, error) {
+	if db == nil {
+		return nil, fmt.Errorf("database connection not initialized")
+	}
+
 	user := &User{}
 	err := db.QueryRow(`
-		INSERT INTO users (google_id, email, name, avatar, created_at)
-		VALUES ($1, $2, $3, $4, NOW())
+		INSERT INTO users (google_id, email, name, avatar, password, created_at)
+		VALUES ($1, $2, $3, $4, '', NOW())
 		ON CONFLICT (google_id) DO UPDATE
 			SET email  = EXCLUDED.email,
 			    name   = EXCLUDED.name,
@@ -63,5 +68,11 @@ func upsertUserImpl(g *googleapi.Userinfo) (*User, error) {
 		RETURNING id, google_id, email, name, avatar, created_at`,
 		g.Id, g.Email, g.Name, g.Picture,
 	).Scan(&user.ID, &user.GoogleID, &user.Email, &user.Name, &user.Avatar, &user.CreatedAt)
+
+	if err != nil {
+		log.Printf("upsertUserImpl error - GoogleID: %s, Email: %s - Error: %v", g.Id, g.Email, err)
+		return nil, err
+	}
+
 	return user, err
 }
