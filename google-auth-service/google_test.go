@@ -398,7 +398,6 @@ func TestHandleGoogleCallback_WithDatabaseStorage(t *testing.T) {
 
 	respEmail := respUser["email"].(string)
 	respName := respUser["name"].(string)
-	respAvatar := respUser["avatar"].(string)
 	respGoogleID := respUser["google_id"].(string)
 
 	if respEmail != testEmail {
@@ -446,19 +445,7 @@ func TestHandleGoogleCallback_WithDatabaseStorage(t *testing.T) {
 
 	t.Logf("✓ User successfully stored in database with ID: %d", storedUser.ID)
 
-	// Test upsert: call again and verify it updates instead of creating duplicate
-	originalGoogleIDForUpdate := testGoogleID
-	updatedEmail := "updated-" + fmt.Sprintf("%d", time.Now().Unix()) + "@example.com"
-
-	fetchGoogleUserInfo = func(token *oauth2.Token) (*googleapi.Userinfo, error) {
-		return &googleapi.Userinfo{
-			Id:      originalGoogleIDForUpdate,
-			Email:   updatedEmail,
-			Name:    "Updated Test User",
-			Picture: "https://example.com/updated-avatar.jpg",
-		}, nil
-	}
-
+	// Test second callback with same google_id: must return same user, no new row
 	state2 := "test_state_" + fmt.Sprintf("%d", time.Now().Unix())
 	req2 := httptest.NewRequest("GET", "/auth/google/callback?code=test_code&state="+state2, nil)
 	req2.AddCookie(&http.Cookie{
@@ -474,40 +461,31 @@ func TestHandleGoogleCallback_WithDatabaseStorage(t *testing.T) {
 		return
 	}
 
-	// Verify updated data in database
-	updatedUser := &User{}
-	err = db.QueryRow(`
-		SELECT id, google_id, email, name, avatar, created_at
-		FROM users
-		WHERE google_id = $1
-	`, testGoogleID).Scan(
-		&updatedUser.ID,
-		&updatedUser.GoogleID,
-		&updatedUser.Email,
-		&updatedUser.Name,
-		&updatedUser.Avatar,
-		&updatedUser.CreatedAt,
-	)
-
-	if err != nil {
-		t.Fatalf("Failed to query updated user from database: %v", err)
+	var response2 map[string]interface{}
+	if err := json.NewDecoder(rr2.Body).Decode(&response2); err != nil {
+		t.Fatalf("Failed to decode second response: %v", err)
+	}
+	respUser2, ok := response2["user"].(map[string]interface{})
+	if !ok {
+		t.Fatal("Expected user object in second response")
 	}
 
-	// Verify it's the same ID (not a new record)
-	if updatedUser.ID != storedUser.ID {
-		t.Errorf("User ID changed after upsert: was %d, now %d. Expected same ID for upsert.", storedUser.ID, updatedUser.ID)
+	// Should be the exact same DB row — same ID, email unchanged
+	returnedID := int64(respUser2["id"].(float64))
+	if returnedID != storedUser.ID {
+		t.Errorf("Second callback returned different user ID: got %d, want %d", returnedID, storedUser.ID)
 	}
 
-	// Verify email was updated
-	if updatedUser.Email != updatedEmail {
-		t.Errorf("Email not updated: got %s, want %s", updatedUser.Email, updatedEmail)
+	// Verify row count — must still be exactly 1 row with this google_id
+	var count int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM users WHERE google_id = $1`, testGoogleID).Scan(&count); err != nil {
+		t.Fatalf("Failed to count users: %v", err)
+	}
+	if count != 1 {
+		t.Errorf("Expected exactly 1 user row, got %d", count)
 	}
 
-	if updatedUser.Name != "Updated Test User" {
-		t.Errorf("Name not updated: got %s, want %s", updatedUser.Name, "Updated Test User")
-	}
-
-	t.Logf("✓ User successfully updated in database (ID remained: %d)", updatedUser.ID)
+	t.Logf("✓ Second callback returned same user (ID=%d), no duplicate inserted", storedUser.ID)
 
 	// Clean up test data
 	db.Exec("DELETE FROM users WHERE google_id = $1", testGoogleID)

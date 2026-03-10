@@ -1,8 +1,16 @@
 import React from "react";
+import { usePage, router } from "@inertiajs/react";
 import Guest from "@/Layouts/GuestLayout.jsx";
 
 function Welcome() {
     const googleAuthUrl = import.meta.env.VITE_GOOGLE_AUTH_URL || "notset";
+    const { auth } = usePage().props;
+    const googleUser = auth?.google_user;
+
+    function handleLogout(e) {
+        e.preventDefault();
+        router.post(route('google.logout'));
+    }
 
     return (
         <>
@@ -12,12 +20,26 @@ function Welcome() {
                     ...Андя піє пивко...
                 </div>
 
-                <a
-                    href={googleAuthUrl}
-                    className="mb-4 inline-flex items-center justify-center rounded-lg bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50"
-                >
-                    Sign in with Google
-                </a>
+                {googleUser ? (
+                    <div className="mb-4 flex items-center gap-3">
+                        <span className="text-sm font-medium text-gray-700">
+                            👋 {googleUser.name || googleUser.email}
+                        </span>
+                        <button
+                            onClick={handleLogout}
+                            className="inline-flex items-center justify-center rounded-lg bg-red-500 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <a
+                        href={googleAuthUrl}
+                        className="mb-4 inline-flex items-center justify-center rounded-lg bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50"
+                    >
+                        Sign in with Google
+                    </a>
+                )}
 
                 {/* Video */}
                 <div className="w-full max-w-4xl h-[80vh]">
