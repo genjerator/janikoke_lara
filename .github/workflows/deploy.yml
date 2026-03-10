@@ -19,7 +19,6 @@ jobs:
             set -e
             cd /home/ubuntu/janikoke_lara
             git pull origin main
-            composer install --no-dev --optimize-autoloader
             ./vendor/bin/sail artisan migrate --force
             ./vendor/bin/sail artisan optimize
             ./vendor/bin/sail artisan challenges:update-center-points
