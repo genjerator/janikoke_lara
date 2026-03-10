@@ -19,10 +19,10 @@ jobs:
             set -e
             cd /home/ubuntu/janikoke_lara
             git pull origin main
-            ./vendor/bin/sail artisan migrate --force
-            ./vendor/bin/sail artisan optimize
-            ./vendor/bin/sail artisan challenges:update-center-points
-            ./vendor/bin/sail artisan areas:update-centroids
+            docker compose exec -T laravel.test php artisan migrate --force
+            docker compose exec -T laravel.test php artisan optimize
+            docker compose exec -T laravel.test php artisan challenges:update-center-points
+            docker compose exec -T laravel.test php artisan areas:update-centroids
             docker compose -f docker-compose.yml build google-auth-service
             docker compose -f docker-compose.yml up -d google-auth-service
             npm run build
