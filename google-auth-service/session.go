@@ -46,7 +46,7 @@ func sessionFromContext(ctx context.Context) *Session {
 	return s
 }
 
-func createSession(user *User) (string, error) {
+func createSessionImpl(user *User) (string, error) {
 	id, err := randomHex(32)
 	if err != nil {
 		return "", err

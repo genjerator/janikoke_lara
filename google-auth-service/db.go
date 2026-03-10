@@ -51,7 +51,7 @@ func connectDB() (*sql.DB, error) {
 	return dbConn, nil
 }
 
-func upsertUser(g *googleapi.Userinfo) (*User, error) {
+func upsertUserImpl(g *googleapi.Userinfo) (*User, error) {
 	user := &User{}
 	err := db.QueryRow(`
 		INSERT INTO users (google_id, email, name, avatar, created_at)

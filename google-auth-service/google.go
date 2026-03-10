@@ -10,6 +10,14 @@ import (
 	"google.golang.org/api/option"
 )
 
+// Function variables for dependency injection / mocking in tests
+var (
+	fetchGoogleUserInfo  = fetchGoogleUserInfoImpl
+	upsertUser           = upsertUserImpl
+	createSession        = createSessionImpl
+	exchangeCodeForToken = exchangeCodeForTokenImpl
+)
+
 // GET /auth/google
 // Redirects the user to Google's OAuth consent screen.
 func handleGoogleAuth(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +52,7 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid oauth state")
 		return
 	}
+
 	// Clear the state cookie
 	http.SetCookie(w, &http.Cookie{Name: "oauth_state", MaxAge: -1, Path: "/"})
 
@@ -54,7 +63,7 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Exchange authorization code for OAuth2 tokens
-	token, err := oauthConfig.Exchange(context.Background(), code)
+	token, err := exchangeCodeForToken(context.Background(), code)
 	if err != nil {
 		writeError(w, http.StatusUnauthorized, "failed to exchange token: "+err.Error())
 		return
@@ -124,11 +133,15 @@ func handleMe(w http.ResponseWriter, r *http.Request) {
 
 // --- Google API ---
 
-func fetchGoogleUserInfo(token *oauth2.Token) (*googleapi.Userinfo, error) {
+func fetchGoogleUserInfoImpl(token *oauth2.Token) (*googleapi.Userinfo, error) {
 	httpClient := oauthConfig.Client(context.Background(), token)
 	svc, err := googleapi.NewService(context.Background(), option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}
 	return svc.Userinfo.Get().Do()
+}
+
+func exchangeCodeForTokenImpl(ctx context.Context, code string) (*oauth2.Token, error) {
+	return oauthConfig.Exchange(ctx, code)
 }
