@@ -23,7 +23,9 @@ class HandleInertiaRequests extends Middleware
         if ($sessionId) {
             try {
                 $goServiceUrl = rtrim(env('GO_AUTH_SERVICE_URL', 'http://localhost:8080'), '/');
-                $response = Http::withCookies(['session_id' => $sessionId], parse_url($goServiceUrl, PHP_URL_HOST))
+                $response = Http::withHeaders([
+                    'Cookie' => 'session_id=' . $sessionId,
+                ])
                     ->timeout(2)
                     ->get($goServiceUrl . '/me');
 
