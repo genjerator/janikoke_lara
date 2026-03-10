@@ -62,3 +62,32 @@ Route::middleware(['web', 'google.auth'])->group(function () {
     // Route::get('/google-dashboard', [GoogleDashboardController::class, 'index']);
 });
 
+// Google OAuth result pages
+Route::get('/auth/google/success', function (Request $request) {
+    return Inertia::render('Auth/GoogleLoginSuccess');
+})->name('google.success');
+
+Route::get('/auth/google/failed', function (Request $request) {
+    return Inertia::render('Auth/GoogleLoginFailed', [
+        'error' => $request->query('error', 'An unknown error occurred.'),
+    ]);
+})->name('google.failed');
+
+// Google logout — clears Go session and removes session_id cookie
+Route::post('/auth/google/logout', function (Request $request) {
+    $sessionId    = $request->cookie('session_id');
+    $goServiceUrl = rtrim(env('GO_AUTH_SERVICE_URL', 'http://localhost:8080'), '/');
+
+    if ($sessionId) {
+        try {
+            Http::withCookies(['session_id' => $sessionId], parse_url($goServiceUrl, PHP_URL_HOST))
+                ->timeout(2)
+                ->post($goServiceUrl . '/auth/logout');
+        } catch (\Throwable $e) {
+            // Go service unreachable — proceed with clearing cookie anyway
+        }
+    }
+
+    return redirect()->route('home')
+        ->withCookie(cookie()->forget('session_id'));
+})->name('google.logout');

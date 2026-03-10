@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -156,29 +157,18 @@ func TestHandleGoogleCallback_MockedSuccess(t *testing.T) {
 	// Call the handler
 	handleGoogleCallback(rr, req)
 
-	// Check status code
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	// Handler now redirects to Laravel success page instead of returning JSON
+	if status := rr.Code; status != http.StatusTemporaryRedirect {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusTemporaryRedirect)
 		t.Logf("Response body: %s", rr.Body.String())
 	}
 
-	// Check response body
-	var response map[string]interface{}
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("Failed to decode response: %v", err)
+	location := rr.Header().Get("Location")
+	if location == "" {
+		t.Error("Expected Location header to be set")
 	}
-
-	if response["status"] != "ok" {
-		t.Errorf("Expected status 'ok', got '%v'", response["status"])
-	}
-
-	user, ok := response["user"].(map[string]interface{})
-	if !ok {
-		t.Fatal("Expected user object in response")
-	}
-
-	if user["email"] != "test@example.com" {
-		t.Errorf("Expected email 'test@example.com', got '%v'", user["email"])
+	if !strings.Contains(location, "/auth/google/success") {
+		t.Errorf("Expected redirect to /auth/google/success, got %s", location)
 	}
 
 	// Check session cookie was set
@@ -208,8 +198,12 @@ func TestHandleGoogleCallback_InvalidState(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handleGoogleCallback(rr, req)
 
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	// Errors now redirect to the Laravel failure page
+	if status := rr.Code; status != http.StatusTemporaryRedirect {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusTemporaryRedirect)
+	}
+	if !strings.Contains(rr.Header().Get("Location"), "/auth/google/failed") {
+		t.Errorf("Expected redirect to /auth/google/failed, got %s", rr.Header().Get("Location"))
 	}
 }
 
@@ -225,8 +219,12 @@ func TestHandleGoogleCallback_MissingCode(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handleGoogleCallback(rr, req)
 
-	if status := rr.Code; status != http.StatusBadRequest {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
+	// Errors now redirect to the Laravel failure page
+	if status := rr.Code; status != http.StatusTemporaryRedirect {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusTemporaryRedirect)
+	}
+	if !strings.Contains(rr.Header().Get("Location"), "/auth/google/failed") {
+		t.Errorf("Expected redirect to /auth/google/failed, got %s", rr.Header().Get("Location"))
 	}
 }
 

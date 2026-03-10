@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"os"
 
 	"golang.org/x/oauth2"
 	googleapi "google.golang.org/api/oauth2/v2"
@@ -19,22 +21,31 @@ var (
 	exchangeCodeForToken = exchangeCodeForTokenImpl
 )
 
+func laravelURL(path string) string {
+	base := os.Getenv("LARAVEL_APP_URL")
+	if base == "" {
+		base = "http://localhost"
+	}
+	return base + path
+}
+
+func redirectToFailure(w http.ResponseWriter, r *http.Request, reason string) {
+	http.Redirect(w, r, laravelURL("/auth/google/failed?error="+url.QueryEscape(reason)), http.StatusTemporaryRedirect)
+}
+
 // GET /auth/google
-// Redirects the user to Google's OAuth consent screen.
 func handleGoogleAuth(w http.ResponseWriter, r *http.Request) {
-	// Use a random state token to prevent CSRF
 	state, err := randomHex(16)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to generate state")
+		redirectToFailure(w, r, "failed to generate state")
 		return
 	}
 
-	// Store state in a short-lived cookie for verification in the callback
 	http.SetCookie(w, &http.Cookie{
 		Name:     "oauth_state",
 		Value:    state,
 		Path:     "/",
-		MaxAge:   300, // 5 minutes
+		MaxAge:   300,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
@@ -44,52 +55,45 @@ func handleGoogleAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /auth/google/callback
-// Handles the redirect from Google. Exchanges the code for tokens,
-// fetches the user profile, upserts the user, and creates a session.
 func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	// Verify CSRF state
 	stateCookie, err := r.Cookie("oauth_state")
 	if err != nil || stateCookie.Value != r.URL.Query().Get("state") {
-		writeError(w, http.StatusBadRequest, "invalid oauth state")
+		redirectToFailure(w, r, "invalid oauth state")
 		return
 	}
 
-	// Clear the state cookie
 	http.SetCookie(w, &http.Cookie{Name: "oauth_state", MaxAge: -1, Path: "/"})
 
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		writeError(w, http.StatusBadRequest, "missing code")
+		redirectToFailure(w, r, "missing code")
 		return
 	}
 
-	// Exchange authorization code for OAuth2 tokens
 	token, err := exchangeCodeForToken(context.Background(), code)
 	if err != nil {
-		writeError(w, http.StatusUnauthorized, "failed to exchange token: "+err.Error())
+		redirectToFailure(w, r, "failed to exchange token")
 		return
 	}
 
-	// Use the token to fetch the Google user profile
 	googleUser, err := fetchGoogleUserInfo(token)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to fetch user info: "+err.Error())
+		redirectToFailure(w, r, "failed to fetch user info")
 		return
 	}
 
-	// Upsert: find existing user or create a new one (auto-register)
 	user, err := upsertUser(googleUser)
 	if err != nil {
 		log.Printf("ERROR: upsertUser failed: %v", err)
-		writeError(w, http.StatusInternalServerError, "database error: "+err.Error())
+		redirectToFailure(w, r, "database error")
 		return
 	}
 
-	// Create server-side session
 	sessionID, err := createSession(user)
 	if err != nil {
 		log.Printf("ERROR: createSession failed: %v", err)
-		writeError(w, http.StatusInternalServerError, "failed to create session: "+err.Error())
+		redirectToFailure(w, r, "failed to create session")
 		return
 	}
 
@@ -98,17 +102,13 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 		Name:     "session_id",
 		Value:    sessionID,
 		Path:     "/",
-		MaxAge:   86400, // 24 hours
+		MaxAge:   86400,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		// Secure: true, // Uncomment in production (HTTPS only)
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{
-		"status": "ok",
-		"user":   user,
-	})
+	// Redirect to Laravel success page
+	http.Redirect(w, r, laravelURL("/auth/google/success"), http.StatusTemporaryRedirect)
 }
 
 // POST /auth/logout
