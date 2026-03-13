@@ -33,18 +33,21 @@
                 </svg>
             </div>
 
+            @php
+                // Retrieve user data - either from active auth session or request data
+                $googleUser = request()->user();
+            @endphp
+
             <h1 class="mb-2 text-2xl font-bold text-gray-800">Login Successful!</h1>
 
-            <p class="mb-1 text-gray-500">You have successfully logged in as</p>
-            <p class="mb-6 text-lg font-semibold text-indigo-600">
-                @php
-                    // Retrieve user data - either from active auth session or request data
-                    $googleUser = request()->user() ?? collect(['email' => '—', 'name' => null]);
-                @endphp
-                {{ $googleUser->email ?? "—" }}
-            </p>
+            @if($googleUser && $googleUser->email && $googleUser->email !== '—')
+                <p class="mb-1 text-gray-500">You have successfully logged in as</p>
+                <p class="mb-6 text-lg font-semibold text-indigo-600">
+                    {{ $googleUser->email }}
+                </p>
+            @endif
 
-            @if($googleUser->name ?? false)
+            @if($googleUser && ($googleUser->name ?? false))
                 <p class="mb-6 text-sm text-gray-400">Welcome, {{ $googleUser->name }} 👋</p>
             @endif
 
