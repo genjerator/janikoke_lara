@@ -43,7 +43,7 @@ Route::get('/testmapi', function () {
 })->name('rrtestmap');
 
 Route::get('/auth/google/success', function (Request $request) {
-    return Inertia::render('Auth/GoogleLoginSuccess');
+    return view('auth.google_login_success');
 })->name('google.success');
 
 Route::get('/auth/google/failed', function (Request $request) {

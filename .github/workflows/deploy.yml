@@ -23,7 +23,7 @@ jobs:
             git pull origin main
 
             echo "── Building images ──"
-            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml build
 
             echo "── Running migrations ──"
             docker compose -f docker-compose.prod.yml run --rm app php artisan migrate --force
@@ -32,6 +32,14 @@ jobs:
 
             echo "── Restarting services ──"
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+            echo "── Clearing caches ──"
+            docker compose -f docker-compose.prod.yml exec app php artisan route:clear
+            docker compose -f docker-compose.prod.yml exec app php artisan config:clear
+            docker compose -f docker-compose.prod.yml exec app php artisan view:clear
+            docker compose -f docker-compose.prod.yml exec app php artisan route:cache
+            docker compose -f docker-compose.prod.yml exec app php artisan config:cache
+            docker compose -f docker-compose.prod.yml exec app php artisan view:cache
 
             echo "── Cleaning up ──"
             docker image prune -f
