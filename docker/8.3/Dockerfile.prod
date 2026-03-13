@@ -9,7 +9,6 @@ COPY resources/ resources/
 COPY public/ public/
 COPY vite.config.js ./
 # Add any other files vite needs
-COPY tsconfig.json ./  
 
 RUN npm run build
 
