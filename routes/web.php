@@ -48,6 +48,9 @@ Route::get('/testmapi', function () {
 Route::get('/auth/google/success', function (Request $request) {
     return Inertia::render('Auth/GoogleLoginSuccess');
 })->name('google.success');
+Route::get('/testr', function (Request $request) {
+    return Inertia::render('Auth/GoogleLoginSuccess');
+})->name('google.test');
 
 Route::get('/auth/google/failed', function (Request $request) {
     return Inertia::render('Auth/GoogleLoginFailed', [
@@ -56,16 +59,16 @@ Route::get('/auth/google/failed', function (Request $request) {
 })->name('google.failed');
 
 Route::post('/auth/google/logout', function (Request $request) {
-    $sessionId    = $request->cookie('session_id');
+    $sessionId = $request->cookie('session_id');
     $goServiceUrl = rtrim(env('GO_AUTH_SERVICE_URL', 'http://localhost:8080'), '/');
 
     if ($sessionId) {
         try {
             Http::withHeaders([
-                'Cookie' => 'session_id=' . $sessionId,
+                'Cookie' => 'session_id='.$sessionId,
             ])
                 ->timeout(2)
-                ->post($goServiceUrl . '/auth/logout');
+                ->post($goServiceUrl.'/auth/logout');
         } catch (\Throwable $e) {
             // Go service unreachable — proceed with clearing cookie anyway
         }
