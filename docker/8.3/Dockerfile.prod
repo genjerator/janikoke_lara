@@ -37,7 +37,10 @@ FROM php:8.3-fpm-alpine
 RUN apk add --no-cache \
     nginx supervisor \
     postgresql-client \
-    php83-pgsql php83-mbstring php83-xml \
+    libpq-dev \        
+    && docker-php-ext-install pdo pdo_pgsql \
+    && apk add --no-cache \
+    php83-mbstring php83-xml \
     php83-zip php83-bcmath php83-intl \
     php83-redis php83-opcache
 
