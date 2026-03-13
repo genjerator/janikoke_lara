@@ -18,13 +18,22 @@ jobs:
           script: |
             set -e
             cd /home/ubuntu/janikoke_lara
-            git pull origin main
-            ./vendor/bin/sail artisan migrate
-            ./vendor/bin/sail artisan challenges:update-center-points
-            ./vendor/bin/sail artisan areas:update-centroids
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            npm run build
-            docker compose -f docker-compose.yml build google-auth-service
-            docker compose -f docker-compose.yml up -d google-auth-service
 
+            echo "── Pulling latest code ──"
+            git pull origin main
+
+            echo "── Building images ──"
+            docker compose -f docker-compose.prod.yml build --no-cache
+
+            echo "── Running migrations ──"
+            docker compose -f docker-compose.prod.yml run --rm app php artisan migrate --force
+            docker compose -f docker-compose.prod.yml run --rm app php artisan challenges:update-center-points
+            docker compose -f docker-compose.prod.yml run --rm app php artisan areas:update-centroids
+
+            echo "── Restarting services ──"
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+            echo "── Cleaning up ──"
+            docker image prune -f
+
+            echo "✓ Deploy complete"
