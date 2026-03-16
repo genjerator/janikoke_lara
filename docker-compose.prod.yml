@@ -17,8 +17,10 @@ services:
   pgsql:
     image: 'postgis/postgis:16-3.4'
     restart: unless-stopped
-    expose:
-      - '5432'
+#    expose:
+#      - '5432'
+    ports:
+      - '5432:5432'
     environment:
       POSTGRES_DB: '${DB_DATABASE}'
       POSTGRES_USER: '${DB_USERNAME}'
