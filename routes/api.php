@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login',[UserAuthController::class,'login'])->middleware('throttle:5,1');
-Route::post('/logout',[UserAuthController::class,'logout22'])
+Route::post('/logout',[UserAuthController::class,'logout'])
     ->middleware('auth:sanctum');
 Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
 
