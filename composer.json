@@ -20,7 +20,8 @@
         "matanyadaev/laravel-eloquent-spatial": "^4.1",
         "symfony/http-client": "^7.2",
         "symfony/mailgun-mailer": "^7.1",
-        "tightenco/ziggy": "^2.0"
+        "tightenco/ziggy": "^2.0",
+        "zohomail/laravel-zeptomail": "dev-main"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
