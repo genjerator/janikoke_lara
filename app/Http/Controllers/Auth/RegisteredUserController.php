@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\LanguageEnum;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -43,9 +44,11 @@ class RegisteredUserController extends Controller
 
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'name'          => 'required|string|max:255',
+                'email'         => 'required|string|lowercase|email|max:255|unique:' . User::class,
+                'password'      => ['required', 'confirmed', Rules\Password::defaults()],
+                'date_of_birth' => ['nullable', 'date', 'before:today'],
+                'language'      => ['nullable', 'string', 'in:' . implode(',', array_column(LanguageEnum::cases(), 'value'))],
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -57,9 +60,11 @@ class RegisteredUserController extends Controller
 
         try {
             $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
+                'name'          => $validated['name'],
+                'email'         => $validated['email'],
+                'password'      => Hash::make($validated['password']),
+                'date_of_birth' => $validated['date_of_birth'] ?? null,
+                'language'      => $validated['language'] ?? LanguageEnum::English->value,
             ]);
 
             event(new Registered($user));

@@ -2,82 +2,121 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\LanguageEnum;
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
-
-    public function index(): View|Application|Factory
-    {
-        $usera = Auth::guard('web')->user();
-//        $user = $auth0->getUser();
-        $user0 = Auth::user();
-        dd( $usera, $user0);
-
-        return view('pages.profile', [
-            'user' => $user,
-            'code' => json_encode(
-                \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
-            )
-        ]);
-    }
-
     /**
-     * Display the user's profile form.
+     * GET /profile
+     * Return the authenticated user's profile data.
      */
-    public function edit(Request $request): Response
+    public function index(Request $request): JsonResponse
     {
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
-    }
+        /** @var User $user */
+        $user = Auth::guard('web')->user();
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if (! $user) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
-        $request->user()->save();
-
-        return Redirect::route('profile.edit');
+        return response()->json([
+            'status' => 'success',
+            'user'   => [
+                'id'            => $user->id,
+                'name'          => $user->name,
+                'email'         => $user->email,
+                'date_of_birth' => $user->date_of_birth?->toDateString(),
+                'language'      => $user->language instanceof LanguageEnum
+                                        ? $user->language->value
+                                        : $user->language,
+                'language_label'=> $user->language instanceof LanguageEnum
+                                        ? $user->language->label()
+                                        : null,
+            ],
+        ]);
     }
 
     /**
-     * Delete the user's account.
+     * PATCH /profile
+     * Update password, date_of_birth and/or language.
+     * All fields are optional — only provided fields are updated.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request): JsonResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+        /** @var User $user */
+        $user = Auth::guard('web')->user();
 
-        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
 
-        Auth::logout();
+        try {
+            $validated = $request->validated();
+            $updated   = [];
 
-        $user->delete();
+            if (! empty($validated['password'])) {
+                $user->password = Hash::make($validated['password']);
+                $updated[] = 'password';
+            }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            if (array_key_exists('date_of_birth', $validated) && $validated['date_of_birth'] !== null) {
+                $user->date_of_birth = $validated['date_of_birth'];
+                $updated[] = 'date_of_birth';
+            }
 
-        return Redirect::to('/');
+            if (array_key_exists('language', $validated) && $validated['language'] !== null) {
+                $user->language = $validated['language'];
+                $updated[] = 'language';
+            }
+
+            if (empty($updated)) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No fields provided to update.',
+                ], 422);
+            }
+
+            $user->save();
+
+            Log::info('Profile updated.', ['user_id' => $user->id, 'fields' => $updated]);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Profile updated successfully.',
+                'updated' => $updated,
+                'user'    => [
+                    'id'            => $user->id,
+                    'name'          => $user->name,
+                    'email'         => $user->email,
+                    'date_of_birth' => $user->date_of_birth?->toDateString(),
+                    'language'      => $user->language instanceof LanguageEnum
+                                            ? $user->language->value
+                                            : $user->language,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Profile update failed.', [
+                'user_id'   => $user->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Profile update failed. Please try again later.',
+            ], 500);
+        }
     }
 }

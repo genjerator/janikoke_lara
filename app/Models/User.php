@@ -63,7 +63,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password'          => 'hashed',
+        'date_of_birth'     => 'date',
+        'language'          => LanguageEnum::class,
     ];
 
     public function challengeAreas()

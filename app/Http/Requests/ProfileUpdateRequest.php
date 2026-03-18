@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use App\Enums\LanguageEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -15,9 +15,22 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $languageValues = implode(',', array_column(LanguageEnum::cases(), 'value'));
+
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'password'              => ['nullable', 'confirmed', Password::defaults()],
+            'password_confirmation' => ['nullable', 'required_with:password'],
+            'date_of_birth'         => ['nullable', 'date', 'before:today'],
+            'language'              => ['nullable', 'string', "in:{$languageValues}"],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'language.in'              => 'The selected language is not supported.',
+            'date_of_birth.before'     => 'Date of birth must be in the past.',
+            'password_confirmation.required_with' => 'Please confirm your new password.',
         ];
     }
 }
