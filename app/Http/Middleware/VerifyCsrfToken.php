@@ -15,5 +15,11 @@ class VerifyCsrfToken extends Middleware
         'auth/register',
         'auth/login',
         'auth/logout',
+        'auth/forgot-password',
+        'auth/forgot-password/send-new',
+        'auth/reset-password',
+//        'auth/verify-email/*',
+//        'auth/email/verification-notification',
+//        'profile',
     ];
 }
