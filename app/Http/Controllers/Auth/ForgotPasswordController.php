@@ -44,8 +44,8 @@ class ForgotPasswordController extends Controller
             ]);
         }
 
-        // Generate a secure random password: 12 chars, mixed case + digits + symbols.
-        $newPassword = Str::password(12, letters: true, numbers: true, symbols: true, spaces: false);
+        // Generate a secure random password: 6 chars, mixed case + digits + symbols.
+        $newPassword = Str::password(6, letters: true, numbers: true, symbols: false, spaces: false);
 
         try {
             $user->password = Hash::make($newPassword);
