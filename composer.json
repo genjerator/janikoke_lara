@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.3",
         "laravel/framework": "^10.10",
+        "laravel/nightwatch": "^1.24",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.4",

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
@@ -20,26 +21,39 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+
         // Honeypot: the 'website' field should never be filled by real users.
         // Bots will auto-fill it. Return a fake success to not tip them off.
         if ($request->filled('website')) {
+            Log::warning('Honeypot triggered', [
+                'email' => $request->input('email'),
+                'ip' => $request->ip(),
+            ]);
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'User registered successfully.',
+                'message' => 'User registered successfully. Verification email sent.',
                 'user' => [
                     'id' => 0,
                     'name' => $request->input('name', ''),
                     'email' => $request->input('email', ''),
                 ],
             ], 201);
-            Log::error('Honeypot triggered: '.$request->input('email'));
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+            ], 422);
+        }
 
         try {
             $user = User::create([
@@ -52,7 +66,7 @@ class RegisteredUserController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'User registered successfully.',
+                'message' => 'User registered successfully. Verification email sent.',
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
