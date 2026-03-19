@@ -42,7 +42,6 @@ jobs:
             docker compose -f docker-compose.prod.yml exec app php artisan config:cache
             docker compose -f docker-compose.prod.yml exec app php artisan view:cache
             docker compose -f docker-compose.prod.yml exec app php artisan optimize:clear
-            docker compose -f docker-compose.prod.yml exec app php artisan nightwatch:agent
 
             echo "── Cleaning up ──"
             docker image prune -f
