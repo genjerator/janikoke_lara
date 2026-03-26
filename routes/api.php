@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoundController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\UserAuthController;
@@ -24,6 +25,9 @@ Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
+
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
 
     Route::post('/round/inside/{round}', [RoundController::class, 'insidePolygon']);
 

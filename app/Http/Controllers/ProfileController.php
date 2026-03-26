@@ -20,7 +20,7 @@ class ProfileController extends Controller
     public function index(Request $request): JsonResponse
     {
         /** @var User $user */
-        $user = Auth::guard('web')->user();
+        $user = Auth::user();
 
         if (! $user) {
             return response()->json([
@@ -54,7 +54,7 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): JsonResponse
     {
         /** @var User $user */
-        $user = Auth::guard('web')->user();
+        $user = Auth::user();
 
         if (! $user) {
             return response()->json([
