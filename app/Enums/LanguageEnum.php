@@ -14,6 +14,7 @@ enum LanguageEnum: string
     case Serbian    = 'sr';
     case Bosnian    = 'bs';
     case Slovenian  = 'sl';
+    case Rusyn      = 'rsn';
 
     public function label(): string
     {
@@ -28,6 +29,7 @@ enum LanguageEnum: string
             self::Serbian    => 'Serbian',
             self::Bosnian    => 'Bosnian',
             self::Slovenian  => 'Slovenian',
+            self::Rusyn      => 'Rusyn',
         };
     }
 
