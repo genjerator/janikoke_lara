@@ -45,10 +45,12 @@ RUN apk add --no-cache \
 
 WORKDIR /var/www/html
 
-# Copy built assets and dependencies from previous stages
+# Copy application code first
+COPY . .
+
+# Copy built assets and dependencies from previous stages (overwrites any empty dirs)
 COPY --from=frontend /app/public/build public/build
 COPY --from=composer /app/vendor vendor
-COPY . .
 
 # Nginx config
 COPY docker/8.3/nginx.prod.conf /etc/nginx/http.d/default.conf
