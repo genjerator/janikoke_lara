@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AreaPriceResource\Pages;
+namespace App\Filament\Resources\AreaPrizeResource\Pages;
 
 use App\Filament\Resources\AreaPrizeResource;
 use Filament\Actions;
@@ -13,7 +13,9 @@ class ListAreaPrices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('New Prize')
+                ->icon('heroicon-o-plus'),
         ];
     }
 }
