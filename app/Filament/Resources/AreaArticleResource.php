@@ -116,7 +116,8 @@ class AreaArticleResource extends Resource
                     ->label('Published')
                     ->dateTime('M d, Y')
                     ->sortable()
-                    ->default('Not published'),
+                    ->placeholder('Not published')
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('M d, Y') : 'Not published'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')

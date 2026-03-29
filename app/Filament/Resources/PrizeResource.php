@@ -35,6 +35,17 @@ class PrizeResource extends Resource
                             ->placeholder('Enter prize name')
                             ->columnSpanFull(),
 
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Prize Image')
+                            ->image()
+                            ->directory('prizes')
+                            ->disk('public')
+                            ->maxSize(2048)
+                            ->nullable()
+                            ->imageEditor()
+                            ->columnSpanFull()
+                            ->helperText('Upload an image for this prize (max 2MB)'),
+
                         Forms\Components\TextInput::make('amount')
                             ->label('Amount')
                             ->numeric()
@@ -96,6 +107,13 @@ class PrizeResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Image')
+                    ->disk('public')
+                    ->square()
+                    ->toggleable()
+                    ->defaultImageUrl(asset('images/placeholder-prize.svg')),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Prize Name')
                     ->sortable()

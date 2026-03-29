@@ -6,6 +6,7 @@ use App\Models\Scopes\isActiveScope;
 use App\Models\HasIsActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Round extends Model
@@ -37,5 +38,15 @@ class Round extends Model
     public function activeChallenges():HasMany
     {
         return $this->hasMany(Challenge::class)->active();
+    }
+
+    /**
+     * Get the prizes available in this round.
+     */
+    public function prizes(): BelongsToMany
+    {
+        return $this->belongsToMany(Prize::class, 'prize_round')
+            ->withPivot('is_active', 'custom_cost')
+            ->withTimestamps();
     }
 }

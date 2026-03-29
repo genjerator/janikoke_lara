@@ -38,6 +38,7 @@ class PrizeSeeder extends Seeder
                 'status' => 1, // Active
                 'description' => 'A voucher for a refreshing beer',
                 'content' => '<p>Redeem this voucher for a cold beer at participating locations. Valid for 30 days from the date of issue.</p><p>Enjoy responsibly!</p>',
+                'image' => null, // Add image via Filament admin
             ],
             [
                 'name' => 'Craft Beer Prize',
@@ -46,6 +47,7 @@ class PrizeSeeder extends Seeder
                 'status' => 1, // Active
                 'description' => 'Local craft beer selection',
                 'content' => '<p>Winner receives their choice of craft beer from our selection of local breweries.</p><ul><li>Valid at partner locations</li><li>Must be 18+ to redeem</li><li>Cannot be combined with other offers</li></ul>',
+                'image' => null,
             ],
             [
                 'name' => 'Beer Challenge Reward',
@@ -54,6 +56,7 @@ class PrizeSeeder extends Seeder
                 'status' => 1, // Active
                 'description' => 'Reward for completing a challenge',
                 'content' => '<p>Congratulations on completing the challenge! Enjoy a well-deserved beer on us.</p><p>This prize can be redeemed at any time during your visit.</p>',
+                'image' => null,
             ],
             [
                 'name' => 'Weekend Beer Special',
@@ -62,6 +65,7 @@ class PrizeSeeder extends Seeder
                 'status' => 2, // Pending
                 'description' => 'Special weekend beer prize',
                 'content' => '<h3>Weekend Special</h3><p>Available only on weekends, this prize gives you access to our premium beer selection.</p><p>Terms and conditions apply.</p>',
+                'image' => null,
             ],
             [
                 'name' => 'Beer Tasting Experience',
@@ -70,6 +74,7 @@ class PrizeSeeder extends Seeder
                 'status' => 1, // Active
                 'description' => 'A guided beer tasting experience',
                 'content' => '<h2>Beer Tasting Experience</h2><p>Join us for a guided tasting of local and international beers. Learn about different styles, brewing techniques, and flavor profiles.</p><h3>What\'s Included:</h3><ul><li>Sampling of 4 different beers</li><li>Expert guide</li><li>Tasting notes</li><li>Snacks pairing</li></ul>',
+                'image' => null,
             ],
         ];
     }

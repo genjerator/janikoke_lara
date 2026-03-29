@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PrizeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoundController;
 use App\Http\Controllers\ScoreController;
@@ -22,6 +23,9 @@ Route::post('/login',[UserAuthController::class,'login'])->middleware('throttle:
 Route::post('/logout',[UserAuthController::class,'logout'])
     ->middleware('auth:sanctum');
 Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
+
+// Prizes - available to all users
+Route::get('/prizes/{round}', [PrizeController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
