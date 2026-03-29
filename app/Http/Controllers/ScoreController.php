@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ScoreTotalResource;
 use App\Http\Services\ScoreService;
 use App\Models\Round;
 use Illuminate\Http\JsonResponse;
@@ -25,5 +26,31 @@ class ScoreController extends Controller
     {
         $scores = $this->scoreService->collectScoresPerRoundGroupedByUser($round);
         return new JsonResponse($scores);
+    }
+
+    /**
+     * Get total scores for authenticated user in a specific round.
+     *
+     * @param Round $round
+     * @return JsonResponse
+     */
+    public function total(Round $round): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $total = $this->scoreService->getTotalScoreForUserInRound($round, $user);
+
+        return ScoreTotalResource::make([
+            'round_id' => $round->id,
+            'user_id' => $user->id,
+            'total' => $total,
+        ])->response();
     }
 }

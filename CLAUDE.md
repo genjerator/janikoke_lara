@@ -87,8 +87,67 @@ if (Schema::hasTable('example_table')) {
 }
 ```
 
+## API Response Conventions
+
+### ⚠️ REQUIRED: Always Use API Resources for JSON Responses
+**ALL API endpoints MUST use Laravel API Resources for formatting responses.**
+Never return raw arrays or manually constructed JSON.
+
+### Required Pattern:
+- ✅ **Single Resource**: Use `ResourceName::make($data)->response()`
+- ✅ **Collection**: Use `ResourceName::collection($data)`
+- ✅ **Wrap in response()->json()**: Only when resource doesn't provide `->response()` method
+
+### Example Resource
+```php
+namespace App\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ExampleResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->created_at,
+        ];
+    }
+}
+```
+
+### Example Controller
+```php
+// Single resource
+public function show(Example $example)
+{
+    return ExampleResource::make($example)->response();
+}
+
+// Collection
+public function index()
+{
+    $examples = Example::all();
+    return response()->json([
+        'success' => true,
+        'data' => ExampleResource::collection($examples),
+    ]);
+}
+```
+
+### Benefits
+- ✅ Consistent response format across all endpoints
+- ✅ Reusable transformation logic
+- ✅ Easy to test independently
+- ✅ Single source of truth for API structure
+- ✅ Clean separation of concerns
+
+**This is mandatory for ALL API endpoints - no exceptions.**
+
 ## Notes
 - Existing tables may still use integer IDs - these are legacy
 - New tables created after March 28, 2026 should follow UUID convention
 - Prizes and AreaArticles already use UUIDs
 - All migrations should be safe to re-run (idempotent)
+- All API endpoints created after March 30, 2026 should use API Resources
