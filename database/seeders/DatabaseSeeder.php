@@ -78,6 +78,11 @@ class DatabaseSeeder extends Seeder
         }
         $this->call([
             AreaSeeder::class,
+            AreaArticleSeeder::class, // Creates 3 articles per area
+            PrizeSeeder::class, // Creates 5 beer prizes with amount 20
+            // Uncomment to seed current production data:
+            // CurrentAreasSeeder::class,
+            // CurrentChallengesSeeder::class,
         ]);
     }
 }

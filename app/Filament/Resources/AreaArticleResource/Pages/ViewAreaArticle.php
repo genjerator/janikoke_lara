@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\AreaPrizeResource\Pages;
+namespace App\Filament\Resources\AreaArticleResource\Pages;
 
-use App\Filament\Resources\AreaPrizeResource;
+use App\Filament\Resources\AreaArticleResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewAreaPrice extends ViewRecord
+class ViewAreaArticle extends ViewRecord
 {
-    protected static string $resource = AreaPrizeResource::class;
+    protected static string $resource = AreaArticleResource::class;
 
     protected function getHeaderActions(): array
     {

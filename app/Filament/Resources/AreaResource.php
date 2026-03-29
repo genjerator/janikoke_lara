@@ -101,7 +101,7 @@ class AreaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PricesRelationManager::class,
+            RelationManagers\ArticlesRelationManager::class,
         ];
     }
 

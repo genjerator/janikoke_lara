@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Filament\Resources\AreaPrizeResource\Pages;
+namespace App\Filament\Resources\AreaArticleResource\Pages;
 
-use App\Filament\Resources\AreaPrizeResource;
+use App\Filament\Resources\AreaArticleResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditAreaPrice extends EditRecord
+class EditAreaArticle extends EditRecord
 {
-    protected static string $resource = AreaPrizeResource::class;
+    protected static string $resource = AreaArticleResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            Actions\ViewAction::make(),
             Actions\DeleteAction::make()
                 ->requiresConfirmation(),
         ];
@@ -25,7 +26,6 @@ class EditAreaPrice extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Prize updated successfully';
+        return 'Article updated successfully';
     }
 }
-

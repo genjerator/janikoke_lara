@@ -101,4 +101,9 @@ class Area extends Model
     {
         return $this->hasMany(AreaPrize::class);
     }
+
+    public function articles()
+    {
+        return $this->hasMany(AreaArticle::class);
+    }
 }

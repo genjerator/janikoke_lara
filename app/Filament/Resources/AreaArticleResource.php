@@ -2,36 +2,31 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AreaPrizeResource\Pages;
-use App\Models\Area;
-use App\Models\AreaPrize;
+use App\Filament\Resources\AreaArticleResource\Pages;
+use App\Models\AreaArticle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class AreaPrizeResource extends Resource
+class AreaArticleResource extends Resource
 {
-    protected static ?string $model = AreaPrize::class;
+    protected static ?string $model = AreaArticle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationGroup = 'Areas';
 
-    protected static ?string $navigationLabel = 'Area Prizes';
+    protected static ?string $navigationLabel = 'Area Articles';
 
-    protected static ?string $modelLabel = 'Prize';
-
-    protected static ?string $pluralModelLabel = 'Prizes';
-
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Basic Information')
+                Forms\Components\Section::make('Article Information')
                     ->schema([
                         Forms\Components\Select::make('area_id')
                             ->label('Area')
@@ -41,63 +36,51 @@ class AreaPrizeResource extends Resource
                             ->required()
                             ->placeholder('Select an area'),
 
-                        Forms\Components\TextInput::make('name')
-                            ->label('Prize Name')
+                        Forms\Components\TextInput::make('title')
+                            ->label('Article Title')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('e.g., Monthly Pass, VIP Access')
+                            ->placeholder('Enter article title')
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('price')
-                            ->label('Price')
-                            ->numeric()
-                            ->minValue(0)
-                            ->prefix('€')
-                            ->placeholder('0.00')
-                            ->required(),
-
-                        Forms\Components\TextInput::make('duration_days')
-                            ->label('Duration (Days)')
-                            ->numeric()
-                            ->minValue(1)
+                        Forms\Components\DateTimePicker::make('published_at')
+                            ->label('Publish Date')
                             ->nullable()
-                            ->placeholder('Leave empty for unlimited')
-                            ->helperText('Number of days this prize is valid for'),
+                            ->placeholder('Leave empty to publish immediately'),
+
+                        Forms\Components\Toggle::make('is_active')
+                            ->label('Active')
+                            ->default(true)
+                            ->helperText('Only active articles will be visible'),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Details')
+                Forms\Components\Section::make('Content')
                     ->schema([
-                        Forms\Components\Textarea::make('description')
-                            ->label('Short Description')
+                        Forms\Components\Textarea::make('excerpt')
+                            ->label('Excerpt')
                             ->rows(3)
                             ->nullable()
-                            ->placeholder('Brief description of this prize')
+                            ->placeholder('Brief summary of the article (optional)')
                             ->columnSpanFull(),
 
                         Forms\Components\RichEditor::make('content')
-                            ->label('Detailed Content')
-                            ->nullable()
+                            ->label('Article Content')
+                            ->required()
                             ->columnSpanFull()
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
                                 'underline',
+                                'strike',
+                                'link',
                                 'bulletList',
                                 'orderedList',
                                 'h2',
                                 'h3',
+                                'blockquote',
                             ])
-                            ->placeholder('Detailed information about what this prize includes'),
-                    ]),
-
-                Forms\Components\Section::make('Settings')
-                    ->schema([
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true)
-                            ->helperText('Only active prizes will be visible to users')
-                            ->inline(false),
+                            ->placeholder('Write your article content here...'),
                     ]),
             ]);
     }
@@ -111,29 +94,33 @@ class AreaPrizeResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Price Name')
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Title')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold')
+                    ->limit(50),
 
-                Tables\Columns\TextColumn::make('price')
-                    ->label('Price')
-                    ->money('EUR')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('duration_days')
-                    ->label('Duration (Days)')
-                    ->sortable()
-                    ->default('Unlimited'),
+                Tables\Columns\TextColumn::make('excerpt')
+                    ->label('Excerpt')
+                    ->limit(60)
+                    ->wrap()
+                    ->toggleable(),
 
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active')
                     ->onColor('success')
                     ->offColor('danger'),
 
+                Tables\Columns\TextColumn::make('published_at')
+                    ->label('Published')
+                    ->dateTime('M d, Y')
+                    ->sortable()
+                    ->default('Not published'),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
-                    ->dateTime()
+                    ->dateTime('M d, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -145,10 +132,14 @@ class AreaPrizeResource extends Resource
                     ->preload(),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active Status')
-                    ->placeholder('All')
-                    ->trueLabel('Active Only')
-                    ->falseLabel('Inactive Only'),
+                    ->label('Status')
+                    ->placeholder('All articles')
+                    ->trueLabel('Active only')
+                    ->falseLabel('Inactive only'),
+
+                Tables\Filters\Filter::make('published')
+                    ->query(fn ($query) => $query->whereNotNull('published_at'))
+                    ->label('Published only'),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -182,9 +173,9 @@ class AreaPrizeResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->emptyStateHeading('No prizes yet')
-            ->emptyStateDescription('Create your first area prize to get started')
-            ->emptyStateIcon('heroicon-o-currency-dollar');
+            ->emptyStateHeading('No articles yet')
+            ->emptyStateDescription('Create your first area article to get started')
+            ->emptyStateIcon('heroicon-o-document-text');
     }
 
     public static function getRelations(): array
@@ -197,11 +188,10 @@ class AreaPrizeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAreaPrices::route('/'),
-            'create' => Pages\CreateAreaPrice::route('/create'),
-            'view' => Pages\ViewAreaPrice::route('/{record}'),
-            'edit' => Pages\EditAreaPrice::route('/{record}/edit'),
+            'index' => Pages\ListAreaArticles::route('/'),
+            'create' => Pages\CreateAreaArticle::route('/create'),
+            'view' => Pages\ViewAreaArticle::route('/{record}'),
+            'edit' => Pages\EditAreaArticle::route('/{record}/edit'),
         ];
     }
 }
-

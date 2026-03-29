@@ -35,30 +35,6 @@ class PrizeResource extends Resource
                             ->placeholder('Enter prize name')
                             ->columnSpanFull(),
 
-                        Forms\Components\Select::make('user_id')
-                            ->label('User')
-                            ->relationship('user', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->nullable()
-                            ->placeholder('Select user (optional)'),
-
-                        Forms\Components\Select::make('round_id')
-                            ->label('Round')
-                            ->relationship('round', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->nullable()
-                            ->placeholder('Select round (optional)'),
-
-                        Forms\Components\Select::make('challenge_area_id')
-                            ->label('Challenge Area')
-                            ->relationship('challengeArea', 'id')
-                            ->searchable()
-                            ->preload()
-                            ->nullable()
-                            ->placeholder('Select challenge area (optional)'),
-
                         Forms\Components\TextInput::make('amount')
                             ->label('Amount')
                             ->numeric()
@@ -66,6 +42,15 @@ class PrizeResource extends Resource
                             ->minValue(0)
                             ->required()
                             ->placeholder('0'),
+
+                        Forms\Components\TextInput::make('cost')
+                            ->label('Score Cost')
+                            ->numeric()
+                            ->default(10)
+                            ->minValue(0)
+                            ->required()
+                            ->helperText('How many score points needed to redeem this prize')
+                            ->placeholder('10'),
 
                         Forms\Components\Select::make('status')
                             ->label('Status')
@@ -117,23 +102,18 @@ class PrizeResource extends Resource
                     ->searchable()
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
-                    ->sortable()
-                    ->searchable()
-                    ->default('—'),
-
-                Tables\Columns\TextColumn::make('round.name')
-                    ->label('Round')
-                    ->sortable()
-                    ->searchable()
-                    ->default('—'),
-
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
                     ->sortable()
                     ->badge()
                     ->color('success'),
+
+                Tables\Columns\TextColumn::make('cost')
+                    ->label('Score Cost')
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->suffix(' pts'),
 
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
@@ -167,18 +147,6 @@ class PrizeResource extends Resource
                         2 => 'Pending',
                         3 => 'Awarded',
                     ]),
-
-                Tables\Filters\SelectFilter::make('user_id')
-                    ->label('User')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload(),
-
-                Tables\Filters\SelectFilter::make('round_id')
-                    ->label('Round')
-                    ->relationship('round', 'name')
-                    ->searchable()
-                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
