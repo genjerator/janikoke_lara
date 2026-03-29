@@ -63,8 +63,9 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini
 
 # Clear any cached bootstrap files and set permissions
 RUN rm -rf bootstrap/cache/*.php \
-    && mkdir -p /var/log/supervisor storage/logs \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && mkdir -p /var/log/supervisor storage/logs storage/public/prizes \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && ln -sf /var/www/html/storage/public /var/www/html/public/storage
 
 EXPOSE 80
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
