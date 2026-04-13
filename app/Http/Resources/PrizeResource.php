@@ -15,18 +15,24 @@ class PrizeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $cost = $this->whenPivotLoaded('prize_round', function () {
+            return $this->pivot->custom_cost ?? $this->cost;
+        }, $this->cost);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'amount' => $this->amount,
-            'cost' => $this->whenPivotLoaded('prize_round', function () {
-                return $this->pivot->custom_cost ?? $this->cost;
-            }, $this->cost),
+            'cost' => $cost,
             'content' => $this->content,
             'image_url' => $this->image
                 ? Storage::disk('public')->url($this->image)
                 : null,
+            'can_afford' => $this->when(
+                auth()->check(),
+                fn () => ($this->additional['available_scores'] ?? 0) >= $cost
+            ),
         ];
     }
 }

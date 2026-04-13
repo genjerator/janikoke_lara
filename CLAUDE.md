@@ -145,6 +145,21 @@ public function index()
 
 **This is mandatory for ALL API endpoints - no exceptions.**
 
+## Postman Collection (REQUIRED)
+
+### ⚠️ REQUIRED: Update Postman Collection When Adding Routes
+**Whenever a new route is added to `routes/api.php`, you MUST also update `janikoke.postman_collection.json`.**
+
+### Rules:
+- ✅ Add the new request under the correct folder (group by feature, e.g. "Prizes", "Auth", "Scores")
+- ✅ Include `Authorization: Bearer {{token}}` header for all `auth:sanctum` routes
+- ✅ Include `Content-Type: application/json` and `Accept: application/json` on all requests
+- ✅ For POST/PUT requests, add a `body` with `mode: raw` and a representative JSON example
+- ✅ Match the URL pattern: `{{base_url}}/api/<path>`
+- ✅ Use collection variables: `{{base_url}}`, `{{token}}`
+
+**This is mandatory — never add a route without updating the Postman collection.**
+
 ## Notes
 - Existing tables may still use integer IDs - these are legacy
 - New tables created after March 28, 2026 should follow UUID convention

@@ -1,0 +1,322 @@
+{
+  "info": {
+    "name": "Janikoke API",
+    "_postman_id": "janikoke-api-collection",
+    "description": "All API routes for the Janikoke Laravel application.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:88",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Bearer token from /api/login response"
+    },
+    {
+      "key": "round_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            },
+            "description": "Authenticate with email (or username) and password. Returns user object with token. Throttled to 5 requests/minute."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logout"]
+            },
+            "description": "Revokes all tokens for the authenticated user. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Get Authenticated User (debug)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"]
+            },
+            "description": "Returns the currently authenticated user. Requires auth:sanctum. NOTE: currently calls dd() — will return empty in production."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Returns authenticated user profile: id, name, email, date_of_birth, language, language_label."
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"new_password\",\n  \"password_confirmation\": \"new_password\",\n  \"date_of_birth\": \"1990-01-15\",\n  \"language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Update profile fields. All fields are optional. Fields: password (nullable, confirmed), date_of_birth (nullable, date, before today), language (nullable, string — must match LanguageEnum values)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rounds",
+      "item": [
+        {
+          "name": "Get Round Challenges",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/round/{{round_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round", "{{round_id}}"]
+            },
+            "description": "Returns challenges mix for the authenticated user in a specific round. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Check Inside Polygon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"area_id\": 1,\n  \"challenge_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/round/inside/{{round_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round", "inside", "{{round_id}}"]
+            },
+            "description": "Check if the authenticated user is inside a polygon for a given challenge/area. Returns {status: true/false}. Requires auth:sanctum. Body: area_id (required, integer), challenge_id (required, integer)."
+          }
+        },
+        {
+          "name": "Get Round Raw Results",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/round/{{round_id}}/rawresult",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round", "{{round_id}}", "rawresult"]
+            },
+            "description": "Returns raw results for all users in a round. Public endpoint — no auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scores",
+      "item": [
+        {
+          "name": "Get Round Scores",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/round/{{round_id}}/scores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round", "{{round_id}}", "scores"]
+            },
+            "description": "Returns scores for the authenticated user in a specific round. Requires auth:sanctum. Also available at /api/round/{round}/result."
+          }
+        },
+        {
+          "name": "Get Round Result (alias)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/round/{{round_id}}/result",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round", "{{round_id}}", "result"]
+            },
+            "description": "Alias for GET /api/round/{round}/scores. Returns the same data. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Get Total Score",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/scores/{{round_id}}/total",
+              "host": ["{{base_url}}"],
+              "path": ["api", "scores", "{{round_id}}", "total"]
+            },
+            "description": "Returns total score for the authenticated user in a specific round. Response: {round_id, user_id, total}. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Get Toplist",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/toplist/{{round_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "toplist", "{{round_id}}"]
+            },
+            "description": "Returns scores for a round grouped by user — public leaderboard. No auth required."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prizes",
+      "item": [
+        {
+          "name": "Get Prizes for Round",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/prizes/{{round_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "prizes", "{{round_id}}"]
+            },
+            "description": "Returns active prizes for a specific round, ordered by custom_cost then cost. Public endpoint. Response: {success, round_id, data: [...prizes]}."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Misc",
+      "item": [
+        {
+          "name": "API Status Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api",
+              "host": ["{{base_url}}"],
+              "path": ["api"]
+            },
+            "description": "Returns auth status. If no valid token, returns {message: 'You did not provide a valid token.'}. If valid, returns token info."
+          }
+        },
+        {
+          "name": "Private (auth check)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/private",
+              "host": ["{{base_url}}"],
+              "path": ["api", "private"]
+            },
+            "description": "Returns {message: 'Your token is valid; you are authorized.'} if token is valid. Requires auth middleware."
+          }
+        }
+      ]
+    }
+  ]
+}

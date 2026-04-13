@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Score;
+use App\Models\PrizeRedemption;
 
 class ScoreService
 {
@@ -51,23 +52,20 @@ class ScoreService
 
     /**
      * Get available scores (earned minus spent on prize redemptions).
-     * For now, just returns total earned scores.
-     * TODO: Subtract spent scores when prize redemption system is implemented.
      *
      * @param User|int $user User model or user ID
      * @return int
      */
     public function getAvailableScores(User|int $user): int
     {
+        $userId = $user instanceof User ? $user->id : $user;
         $totalEarned = $this->getTotalScores($user, activeOnly: true);
 
-        // TODO: When prize_redemptions table is implemented:
-        // $totalSpent = PrizeRedemption::where('user_id', $userId)
-        //     ->whereIn('status', ['pending', 'approved', 'completed'])
-        //     ->sum('score_cost');
-        // return $totalEarned - $totalSpent;
+        $totalSpent = PrizeRedemption::where('user_id', $userId)
+            ->whereIn('status', ['pending', 'approved', 'completed'])
+            ->sum('score_cost');
 
-        return $totalEarned;
+        return $totalEarned - (int) $totalSpent;
     }
 
     /**

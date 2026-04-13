@@ -45,7 +45,7 @@ services:
            context: ./google-auth-service
            dockerfile: Dockerfile
        ports:
-           - "8081:8080"
+           - "8099:8080"
        env_file:
            - ./.env
        restart: always

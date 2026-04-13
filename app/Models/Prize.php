@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Prize extends Model
 {
@@ -35,5 +36,13 @@ class Prize extends Model
         return $this->belongsToMany(Round::class, 'prize_round')
             ->withPivot('is_active', 'custom_cost')
             ->withTimestamps();
+    }
+
+    /**
+     * Get all redemptions for this prize.
+     */
+    public function redemptions(): HasMany
+    {
+        return $this->hasMany(PrizeRedemption::class);
     }
 }

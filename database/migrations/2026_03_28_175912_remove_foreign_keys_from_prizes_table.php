@@ -22,7 +22,7 @@ return new class extends Migration
                 if (Schema::hasColumn('prizes', $column)) {
                     // Try to drop foreign key (may not exist, so wrap in try-catch)
                     try {
-                        $table->dropForeign(['prizes_' . $column . '_foreign']);
+                        $table->dropForeign('prizes_' . $column . '_foreign');
                     } catch (\Exception $e) {
                         // Foreign key might not exist or have different name, continue
                     }

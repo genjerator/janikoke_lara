@@ -41,7 +41,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/round/{round}/result', [ScoreController::class, 'roundScores']);
 
     Route::get('/scores/{round}/total', [ScoreController::class, 'total']);
-    //swat this
+
+    // Prize redemption routes (authenticated)
+    Route::get('/prizes', [PrizeController::class, 'listPrizes']);
+    Route::post('/prizes/redeem', [PrizeController::class, 'redeem']);
+    Route::get('/prizes/redemptions', [PrizeController::class, 'redemptions']);
+    Route::get('/prizes/redemptions/{id}', [PrizeController::class, 'showRedemption']);
 });
 Route::get('/round', function (Request $request) {
     return 'sdsdsd';
