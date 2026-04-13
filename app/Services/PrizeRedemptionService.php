@@ -45,6 +45,9 @@ class PrizeRedemptionService
                 'approved_at'     => now(),
             ]);
 
+            // Decrement prize stock by 1
+            $prize->decrement('amount');
+
             $this->consumeScoresFifo($user->id, $prize->cost);
 
             return $redemption;

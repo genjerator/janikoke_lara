@@ -27,7 +27,8 @@ class ScoreResource extends JsonResource
             "challenge_description" => $this->resource->challengeArea->challenge->description,
             "area_name" => $this->resource->challengeArea->area->id,
             "time" => strtotime($this->resource->created_at),
-            "points" => $this->resource->amount
+            "points" => $this->resource->amount,
+            "status" => $this->resource->status, // 1 = active, 0 = spent (redeemed)
         ];
     }
 }
