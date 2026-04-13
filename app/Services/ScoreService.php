@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Score;
-use App\Models\PrizeRedemption;
 
 class ScoreService
 {
@@ -58,14 +57,9 @@ class ScoreService
      */
     public function getAvailableScores(User|int $user): int
     {
-        $userId = $user instanceof User ? $user->id : $user;
-        $totalEarned = $this->getTotalScores($user, activeOnly: true);
-
-        $totalSpent = PrizeRedemption::where('user_id', $userId)
-            ->whereIn('status', ['pending', 'approved', 'completed'])
-            ->sum('score_cost');
-
-        return $totalEarned - (int) $totalSpent;
+        // Spent scores are marked status=0 at redemption time (FIFO).
+        // Available = sum of all remaining status=1 scores.
+        return $this->getTotalScores($user, activeOnly: true);
     }
 
     /**

@@ -8,15 +8,17 @@ use App\Http\Resources\PrizeResource;
 use App\Models\Prize;
 use App\Models\PrizeRedemption;
 use App\Models\Round;
+use App\Services\PrizeRedemptionService;
 use App\Services\ScoreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PrizeController extends Controller
 {
-    public function __construct(private readonly ScoreService $scoreService)
-    {
+    public function __construct(
+        private readonly ScoreService $scoreService,
+        private readonly PrizeRedemptionService $prizeRedemptionService,
+    ) {
     }
 
     /**
@@ -103,35 +105,7 @@ class PrizeController extends Controller
         $user = $request->user();
 
         try {
-            $redemption = DB::transaction(function () use ($request, $user) {
-                // Re-check available scores inside transaction to prevent race conditions
-                $availableScores = $this->scoreService->getAvailableScores($user);
-
-                $prize = Prize::where('id', $request->prize_id)
-                    ->where('status', 1)
-                    ->lockForUpdate()
-                    ->first();
-
-                if (!$prize) {
-                    abort(404, 'Prize not found or not available');
-                }
-
-                if ($availableScores < $prize->cost) {
-                    abort(422, 'Insufficient scores to redeem this prize');
-                }
-
-                return PrizeRedemption::create([
-                    'user_id' => $user->id,
-                    'prize_id' => $prize->id,
-                    'prize_name' => $prize->name,
-                    'prize_amount' => $prize->amount,
-                    'score_cost' => $prize->cost,
-                    'status' => 'approved',
-                    'redemption_code' => PrizeRedemption::generateCode($prize->name),
-                    'redeemed_at' => now(),
-                    'approved_at' => now(),
-                ]);
-            });
+            $redemption = $this->prizeRedemptionService->redeem($user, $request->prize_id);
         } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
             return response()->json([
                 'success' => false,
