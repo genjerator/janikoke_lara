@@ -21,6 +21,18 @@
       "key": "round_id",
       "value": "1",
       "type": "string"
+    },
+    {
+      "key": "prize_id",
+      "value": "",
+      "type": "string",
+      "description": "UUID of a prize, used for redemption"
+    },
+    {
+      "key": "redemption_id",
+      "value": "",
+      "type": "string",
+      "description": "UUID of a prize redemption"
     }
   ],
   "item": [
@@ -178,6 +190,21 @@
           }
         },
         {
+          "name": "List Rounds (placeholder)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/round",
+              "host": ["{{base_url}}"],
+              "path": ["api", "round"]
+            },
+            "description": "Placeholder route — currently returns the raw string 'sdsdsd'. Not yet implemented. Public endpoint — no auth required."
+          }
+        },
+        {
           "name": "Get Round Raw Results",
           "request": {
             "method": "GET",
@@ -278,6 +305,75 @@
               "path": ["api", "prizes", "{{round_id}}"]
             },
             "description": "Returns active prizes for a specific round, ordered by custom_cost then cost. Public endpoint. Response: {success, round_id, data: [...prizes]}."
+          }
+        },
+        {
+          "name": "List Prizes (with balance)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/prizes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "prizes"]
+            },
+            "description": "Returns all active prizes ordered by cost, plus the authenticated user's score balance. Response: {success, user: {total_scores, available_scores, spent_scores}, data: [...prizes]}. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Redeem Prize",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prize_id\": \"a20300b3-213a-4190-831e-c3cb2dc22233\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/prizes/redeem",
+              "host": ["{{base_url}}"],
+              "path": ["api", "prizes", "redeem"]
+            },
+            "description": "Redeem a prize using the authenticated user's available scores. Body: prize_id (required, string/UUID, must exist in prizes table). Returns the created redemption and the user's new available_scores balance. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Get Redemption History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/prizes/redemptions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "prizes", "redemptions"]
+            },
+            "description": "Returns a paginated (15 per page) list of the authenticated user's prize redemptions, most recent first. Requires auth:sanctum."
+          }
+        },
+        {
+          "name": "Get Redemption by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/prizes/redemptions/{{redemption_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "prizes", "redemptions", "{{redemption_id}}"]
+            },
+            "description": "Returns a single prize redemption belonging to the authenticated user. 404 if not found, 403 if it belongs to another user. Requires auth:sanctum."
           }
         }
       ]

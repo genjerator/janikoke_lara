@@ -20,8 +20,7 @@ return [
 
     'guards' => [
         'web' => [
-            //'driver' => 'session',
-            'driver' => 'auth0',
+            'driver' => 'session',
             'provider' => 'users',
         ],
         'filament' => [

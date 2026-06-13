@@ -54,7 +54,7 @@ class CurrentChallengesSeeder extends Seeder
                 'type' => 'ten_each',
                 'active' => true,
                 'is_active' => true,
-                'center_point' => [19.839301977251957, 45.2387271765867],
+                'center_point' => [19.84033010188558, 45.238858376045215],
             ],
             [
                 'round_id' => 1,
@@ -63,7 +63,7 @@ class CurrentChallengesSeeder extends Seeder
                 'type' => 'ten_each',
                 'active' => true,
                 'is_active' => true,
-                'center_point' => [19.840522309818784, 45.238670702813494],
+                'center_point' => [19.84052230981879, 45.238670702813494],
             ],
             [
                 'round_id' => 1,
@@ -81,7 +81,7 @@ class CurrentChallengesSeeder extends Seeder
                 'type' => 'zigzag',
                 'active' => true,
                 'is_active' => true,
-                'center_point' => [19.41293973928824, 45.55311777049541],
+                'center_point' => [19.42427943219008, 45.54645837004276],
             ],
             [
                 'round_id' => 1,

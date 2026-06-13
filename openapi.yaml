@@ -1,0 +1,1022 @@
+openapi: 3.0.3
+info:
+  title: Janikoke API
+  description: API for the Janikoke Laravel application (rounds, challenges, scores, prizes).
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8088/api
+    description: Local (Sail)
+
+tags:
+  - name: Auth
+  - name: Profile
+  - name: Rounds
+  - name: Scores
+  - name: Prizes
+  - name: Misc
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      tags: [Auth]
+      summary: Login
+      description: |
+        Authenticate with email (or username) and password. Throttled to 5 requests/minute.
+        Returns the user with a fresh Sanctum token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserToken'
+        '401':
+          description: Validation error or invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      description: Revokes all Sanctum tokens for the authenticated user.
+      responses:
+        '200':
+          description: Logged out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: logged out
+
+  /user:
+    get:
+      tags: [Auth]
+      summary: Get authenticated user (debug)
+      description: |
+        **Debug endpoint.** Calls `dd($user)` and dumps the user object —
+        does not return normal JSON. Not intended for production use.
+      responses:
+        '200':
+          description: Debug dump of the authenticated user (HTML, not JSON).
+
+  /profile:
+    get:
+      tags: [Profile]
+      summary: Get profile
+      description: Returns the authenticated user's profile data.
+      responses:
+        '200':
+          description: Profile data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '401':
+          description: Unauthenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusErrorResponse'
+    patch:
+      tags: [Profile]
+      summary: Update profile
+      description: |
+        Update password, date_of_birth and/or language. All fields are optional —
+        only the fields provided are updated. At least one field must be provided.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileUpdateResponse'
+        '401':
+          description: Unauthenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusErrorResponse'
+        '422':
+          description: Validation error, or no fields provided to update.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusErrorResponse'
+        '500':
+          description: Update failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusErrorResponse'
+
+  /round:
+    get:
+      tags: [Rounds]
+      summary: List rounds (placeholder)
+      description: |
+        **Placeholder route.** Currently returns the raw string `sdsdsd` and is
+        not yet implemented as a real endpoint.
+      security: []
+      responses:
+        '200':
+          description: Placeholder response.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: sdsdsd
+
+  /round/{round}:
+    get:
+      tags: [Rounds]
+      summary: Get round challenges
+      description: |
+        Returns the active challenges for the round, each with its areas and a
+        `status` flag (1 = current/next target, 0 = not yet) based on the
+        authenticated user's progress (zigzag logic).
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Challenges mix for the round.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
+
+  /round/inside/{round}:
+    post:
+      tags: [Rounds]
+      summary: Check inside polygon
+      description: |
+        Checks whether the authenticated user's check-in counts as being inside
+        the given area for the given challenge, and records progress accordingly
+        (zigzag challenge type).
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsidePolygonRequest'
+      responses:
+        '201':
+          description: Result of the check.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    description: True if this check-in counted as progress.
+        '422':
+          description: Validation error (area_id / challenge_id invalid).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /round/{round}/scores:
+    get:
+      tags: [Scores]
+      summary: Get round scores
+      description: Returns the authenticated user's raw score entries for the round, keyed by `challenge_id-area_id-timestamp`.
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Map of score entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ScoreRawItem'
+
+  /round/{round}/result:
+    get:
+      tags: [Scores]
+      summary: Get round result (alias)
+      description: Alias for `GET /round/{round}/scores`. Returns the same data.
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Map of score entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ScoreRawItem'
+
+  /round/{round}/rawresult:
+    get:
+      tags: [Rounds]
+      summary: Get round raw results
+      description: Returns raw results for all users in a round (every recorded `user_challenge_area` entry), keyed by its ID. Public endpoint.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Map of raw result entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/RawResultItem'
+
+  /scores/{round}/total:
+    get:
+      tags: [Scores]
+      summary: Get total score
+      description: Returns the total score (sum of `amount`, regardless of status) for the authenticated user in the round.
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Total score, wrapped in `data` (default Laravel JsonResource wrapping).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ScoreTotal'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthorized
+
+  /toplist/{round}:
+    get:
+      tags: [Scores]
+      summary: Get toplist
+      description: Public leaderboard — scores for a round grouped by user, sorted by total descending.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Leaderboard grouped by user name.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ToplistEntry'
+
+  /prizes/{round}:
+    get:
+      tags: [Prizes]
+      summary: Get prizes for round (legacy, public)
+      description: Returns active prizes for a specific round, ordered by `custom_cost` then `cost`.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RoundId'
+      responses:
+        '200':
+          description: Prizes for the round.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  round_id:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prize'
+        '404':
+          description: Round not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFalseResponse'
+
+  /prizes:
+    get:
+      tags: [Prizes]
+      summary: List prizes with balance
+      description: Returns all active prizes ordered by `cost`, plus the authenticated user's score balance.
+      responses:
+        '200':
+          description: Prizes and user balance.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+                    properties:
+                      total_scores:
+                        type: integer
+                        example: 40
+                      available_scores:
+                        type: integer
+                        example: 40
+                      spent_scores:
+                        type: integer
+                        example: 0
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Prize'
+
+  /prizes/redeem:
+    post:
+      tags: [Prizes]
+      summary: Redeem a prize
+      description: |
+        Redeems a prize for the authenticated user's available scores.
+        Locks the prize row, checks `available_scores >= prize.cost`, creates a
+        `PrizeRedemption`, decrements prize stock, and marks the oldest active
+        scores as spent (FIFO) until the cost is covered.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrizeRedeemRequest'
+      responses:
+        '201':
+          description: Prize redeemed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  redemption:
+                    $ref: '#/components/schemas/PrizeRedemption'
+                  new_balance:
+                    type: object
+                    properties:
+                      available_scores:
+                        type: integer
+                        example: 30
+        '404':
+          description: Prize not found or not available.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFalseResponse'
+        '422':
+          description: Insufficient scores to redeem this prize, or validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFalseResponse'
+
+  /prizes/redemptions:
+    get:
+      tags: [Prizes]
+      summary: Get redemption history
+      description: Returns a paginated (15 per page) list of the authenticated user's prize redemptions, most recent first.
+      responses:
+        '200':
+          description: Paginated redemption history.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PrizeRedemption'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      per_page:
+                        type: integer
+                        example: 15
+                      total:
+                        type: integer
+                        example: 1
+
+  /prizes/redemptions/{id}:
+    get:
+      tags: [Prizes]
+      summary: Get redemption by ID
+      description: Returns a single prize redemption belonging to the authenticated user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UUID of the prize redemption.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Redemption details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/PrizeRedemption'
+        '403':
+          description: Redemption belongs to another user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFalseResponse'
+        '404':
+          description: Redemption not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessFalseResponse'
+
+  /private:
+    get:
+      tags: [Misc]
+      summary: Auth check (private)
+      description: Returns a confirmation message if the token is valid. Requires `auth` middleware.
+      responses:
+        '200':
+          description: Token is valid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Your token is valid; you are authorized."
+
+  /scope:
+    get:
+      tags: [Misc]
+      summary: Scope check
+      description: Returns a confirmation message if the token has the `read:messages` permission.
+      responses:
+        '200':
+          description: Token is valid and has the required scope.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Your token is valid and has the `read:messages` permission; you are authorized."
+
+  /:
+    get:
+      tags: [Misc]
+      summary: API status check
+      description: Returns auth status. If no valid token, returns a message saying so; if valid, returns token info.
+      security: []
+      responses:
+        '200':
+          description: Auth status.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "You did not provide a valid token."
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Your token is valid; you are authorized."
+                      id:
+                        type: integer
+                        example: 1
+                      token:
+                        type: object
+                        description: Raw attributes of the authenticated user.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum token
+      description: Sanctum personal access token returned by `POST /login`.
+
+  parameters:
+    RoundId:
+      name: round
+      in: path
+      required: true
+      description: Round ID.
+      schema:
+        type: integer
+        example: 1
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          description: Email address or username.
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password
+
+    UserToken:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: user@example.com
+        token:
+          type: string
+          description: Plain-text Sanctum API token.
+          example: "1|abcdef1234567890"
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Invalid Credentials
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    StatusErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Unauthenticated.
+
+    SuccessFalseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+
+    ProfileResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              example: user@example.com
+            date_of_birth:
+              type: string
+              format: date
+              nullable: true
+              example: "1990-01-15"
+            language:
+              type: string
+              nullable: true
+              example: en
+            language_label:
+              type: string
+              nullable: true
+              example: English
+
+    ProfileUpdateRequest:
+      type: object
+      description: All fields optional; at least one must be provided.
+      properties:
+        password:
+          type: string
+          format: password
+          nullable: true
+        password_confirmation:
+          type: string
+          format: password
+          nullable: true
+          description: Required if `password` is provided.
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+          description: Must be a date before today.
+        language:
+          type: string
+          nullable: true
+          description: One of the LanguageEnum values.
+          enum: [en, de, fr, es, it, pt, hr, sr, bs, sl, rsn]
+          example: en
+
+    ProfileUpdateResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Profile updated successfully.
+        updated:
+          type: array
+          items:
+            type: string
+          example: ["date_of_birth", "language"]
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              example: user@example.com
+            date_of_birth:
+              type: string
+              format: date
+              nullable: true
+              example: "1990-01-15"
+            language:
+              type: string
+              nullable: true
+              example: en
+
+    Point:
+      type: object
+      properties:
+        longitude:
+          type: number
+          format: double
+          example: 19.840330
+        latitude:
+          type: number
+          format: double
+          example: 45.238858
+
+    Area:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Liman 3 parking"
+        description:
+          type: string
+          nullable: true
+          example: "Liman 3 parking"
+        center_point:
+          $ref: '#/components/schemas/Point'
+        polygons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Point'
+        status:
+          type: integer
+          enum: [0, 1]
+          description: 1 if this is the user's current/next target area in the challenge's zigzag sequence, otherwise 0.
+          example: 1
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Liman 3"
+        type:
+          type: string
+          enum: [ten_each, zigzag]
+          example: zigzag
+        description:
+          type: string
+          nullable: true
+          example: "Liman 3"
+        center_point:
+          $ref: '#/components/schemas/Point'
+        areas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Area'
+
+    InsidePolygonRequest:
+      type: object
+      required: [area_id, challenge_id]
+      properties:
+        area_id:
+          type: integer
+          description: Must exist in the areas table.
+          example: 1
+        challenge_id:
+          type: integer
+          description: Must exist in the challenges table.
+          example: 1
+
+    ScoreRawItem:
+      type: object
+      properties:
+        cidaid:
+          type: string
+          description: "Composite key: {challenge_id}-{area_id}-{unix_timestamp}"
+          example: "1-1-1749470400"
+        challenge_id:
+          type: integer
+          example: 1
+        area_id:
+          type: integer
+          example: 1
+        challenge_name:
+          type: string
+          example: "Liman 3"
+        challenge_type:
+          type: string
+          example: zigzag
+        challenge_description:
+          type: string
+          nullable: true
+          example: "Liman 3"
+        area_name:
+          type: string
+          example: "Liman 3 parking"
+        points:
+          type: integer
+          example: 10
+        user_name:
+          type: integer
+          description: Actually the user ID (field is mislabeled in the source query).
+          example: 1
+        created_at_unix:
+          type: integer
+          example: 1749470400
+
+    RawResultItem:
+      type: object
+      properties:
+        cidaid:
+          type: string
+          example: "1-1"
+        challenge_id:
+          type: integer
+          example: 1
+        area_id:
+          type: integer
+          example: 1
+        challenge_name:
+          type: string
+          example: "Liman 3"
+        challenge_type:
+          type: string
+          example: zigzag
+        challenge_description:
+          type: string
+          nullable: true
+          example: "Liman 3"
+        area_name:
+          type: string
+          example: "Liman 3 parking"
+        id:
+          type: integer
+          description: ID of the user_challenge_area record.
+          example: 1
+
+    ScoreTotal:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        round_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 40
+
+    ToplistEntry:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              score_id:
+                type: integer
+                example: 1
+              score_name:
+                type: string
+                example: "Liman 3 parking"
+              user_id:
+                type: integer
+                example: 1
+              user_name:
+                type: string
+                example: "John Doe"
+              round_id:
+                type: integer
+                example: 1
+              created_at:
+                type: string
+                description: Human-readable relative time.
+                example: "2 hours ago"
+              amount:
+                type: integer
+                example: 10
+        total:
+          type: integer
+          description: Sum of `amount` across all items for this user.
+          example: 40
+
+    Prize:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "a20300b3-213a-4190-831e-c3cb2dc22233"
+        name:
+          type: string
+          example: "Beer Voucher"
+        description:
+          type: string
+          nullable: true
+          example: "Redeemable for one beer"
+        amount:
+          type: integer
+          description: Remaining stock.
+          example: 19
+        cost:
+          type: integer
+          description: Score cost (or `custom_cost` if loaded via a round pivot).
+          example: 10
+        content:
+          type: string
+          nullable: true
+        image_url:
+          type: string
+          nullable: true
+          format: uri
+        can_afford:
+          type: boolean
+          description: Present only when authenticated. True if available_scores >= cost.
+          example: true
+
+    PrizeRedeemRequest:
+      type: object
+      required: [prize_id]
+      properties:
+        prize_id:
+          type: string
+          format: uuid
+          description: Must exist in the prizes table.
+          example: "a20300b3-213a-4190-831e-c3cb2dc22233"
+
+    PrizeRedemption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "b3f1a2c4-5678-90ab-cdef-1234567890ab"
+        prize_id:
+          type: string
+          format: uuid
+          example: "a20300b3-213a-4190-831e-c3cb2dc22233"
+        prize_name:
+          type: string
+          example: "Beer Voucher"
+        prize_amount:
+          type: integer
+          example: 1
+        score_cost:
+          type: integer
+          example: 10
+        status:
+          type: string
+          enum: [pending, approved, completed, cancelled]
+          example: approved
+        redemption_code:
+          type: string
+          example: "BEER-3F2A1B"
+        notes:
+          type: string
+          nullable: true
+        redeemed_at:
+          type: string
+          format: date-time
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_at:
+          type: string
+          format: date-time
+          nullable: true

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+cd /var/www/html
+
+# Build optimized caches with the runtime environment available.
+# These run at startup (not build time) because env vars are injected
+# via env_file at runtime and .env is excluded from the image.
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

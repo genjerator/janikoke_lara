@@ -25,7 +25,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Liman 3 building',
                 'description' => 'Liman 3 building',
-                'point' => null,
+                'point' => new Point(45.238185177022, 19.838446871092),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8382080, 45.2382009),
@@ -70,7 +70,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Skate park',
                 'description' => 'Liman 3 skate park',
-                'point' => null,
+                'point' => new Point(45.238443838011, 19.842297585249),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8419362, 45.2385382),
@@ -98,7 +98,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Covek jelen',
                 'description' => 'Liman 3 covek jelen',
-                'point' => null,
+                'point' => new Point(45.239327946831, 19.841041761269),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8408844, 45.2394033),
@@ -125,7 +125,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Jarboli',
                 'description' => 'Liman 3 Jarboli',
-                'point' => null,
+                'point' => new Point(45.241181162217, 19.842334809795),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8420253, 45.2412479),
@@ -150,7 +150,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Dvoriste',
                 'description' => 'Liman 3 dvoriste',
-                'point' => null,
+                'point' => new Point(45.237385697293, 19.837931292968),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8375867,45.2375652 ),
@@ -189,7 +189,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Kod Jove',
                 'description' => 'Kod Jove',
-                'point' => null,
+                'point' => new Point(45.235287294766, 19.842653591109),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8419521,45.23554 ),
@@ -214,7 +214,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Matka',
                 'description' => 'Matka',
-                'point' => null,
+                'point' => new Point(45.260867349807, 19.843406323534),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8432148,45.2610558 ),
@@ -241,7 +241,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Pivnica',
                 'description' => 'Pivnica',
-                'point' => null,
+                'point' => new Point(45.256028724854, 19.844254884134),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.8431458, 45.2564705),
@@ -267,7 +267,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Betjarac',
                 'description' => 'Betjarac',
-                'point' => null,
+                'point' => new Point(45.247490611484, 19.855646624094),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.854081, 45.2487686),
@@ -306,7 +306,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Trokut',
                 'description' => 'Trokut',
-                'point' => null,
+                'point' => new Point(45.540639793348, 19.433153650805),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.4316891, 45.5424095),
@@ -338,7 +338,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Bazen L',
                 'description' => 'Bazen L',
-                'point' => null,
+                'point' => new Point(45.560314097581, 19.401086121671),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.4007136, 45.5605097),
@@ -365,7 +365,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Bazen R',
                 'description' => 'Bazen R',
-                'point' => null,
+                'point' => new Point(45.560125084972, 19.400502486631),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.4004017, 45.5606161),
@@ -391,7 +391,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Bombaj',
                 'description' => 'Bombaj',
-                'point' => null,
+                'point' => new Point(45.56204115642, 19.413589385984),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.4130577, 45.5621498),
@@ -417,7 +417,7 @@ class AreaSeeder extends Seeder
             $areaBuilding = Area::factory()->create([
                 'name' => 'Ljesik',
                 'description' => 'Ljesik',
-                'point' => null,
+                'point' => new Point(45.555141448465, 19.410630671242),
                 'area' => new Polygon([
                     new LineString([
 //                        new Point(19.4084207, 45.5550776),

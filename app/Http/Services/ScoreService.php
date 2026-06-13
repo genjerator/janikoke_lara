@@ -37,7 +37,7 @@ class ScoreService
 
     public function getTotalScoreForUserInRound(Round $round, User $user): int
     {
-        return Score::where(['user_id' => $user->id, 'round_id' => $round->id])
+        return Score::where(['user_id' => $user->id, 'round_id' => $round->id, 'status' => 1])
             ->sum('amount');
     }
 

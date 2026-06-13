@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             $areaParking = Area::factory()->create([
                 'name' => 'Liman 3 parking',
                 'description' => 'Liman 3 parking',
-                'point' => null,
+                'point' => new Point(45.237570271404, 19.838537940215),
                 'area' => new Polygon([
                     new LineString([
                         new Point(45.2376218, 19.8380899),
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             $areaPark = Area::factory()->create([
                 'name' => 'Liman 3 park',
                 'description' => 'Liman 3 park',
-                'point' => null,
+                'point' => new Point(45.238946319233, 19.840463259092),
                 'area' => new Polygon([
                     new LineString([
                         new Point(45.2395553, 19.8383689),
