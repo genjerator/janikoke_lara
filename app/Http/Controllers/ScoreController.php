@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ScoreTotalResource;
 use App\Http\Services\ScoreService;
+use App\Services\ScoreService as BalanceService;
 use App\Models\Round;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -11,8 +12,10 @@ use Inertia\Inertia;
 
 class ScoreController extends Controller
 {
-    public function __construct(private ScoreService $scoreService)
-    {
+    public function __construct(
+        private ScoreService $scoreService,
+        private BalanceService $balanceService,
+    ) {
 
     }
     public function roundScores(Round $round)
@@ -45,7 +48,9 @@ class ScoreController extends Controller
             ], 401);
         }
 
-        $total = $this->scoreService->getTotalScoreForUserInRound($round, $user);
+        // Use the same global available-balance the redemption flow enforces,
+        // so the displayed total can never diverge from what a user can redeem.
+        $total = $this->balanceService->getAvailableScores($user);
 
         return ScoreTotalResource::make([
             'round_id' => $round->id,

@@ -54,6 +54,7 @@ class ScoreService
                 'a.id as area_id',
                 'a.name as area_name',
                 's.amount as points',
+                's.status as status',
                 's.user_id as user_name',
                 DB::raw('EXTRACT(EPOCH FROM s.created_at)::INT AS created_at_unix')
             )
