@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Score;
+use App\Models\PrizeRedemption;
 
 class ScoreService
 {
@@ -57,9 +58,16 @@ class ScoreService
      */
     public function getAvailableScores(User|int $user): int
     {
-        // Spent scores are marked status=0 at redemption time (FIFO).
-        // Available = sum of all remaining status=1 scores.
-        return $this->getTotalScores($user, activeOnly: true);
+        $userId = $user instanceof User ? $user->id : $user;
+
+        // Available = everything earned minus the exact cost of past redemptions.
+        // We do NOT consume whole score rows: scores are atomic 10-point records,
+        // so flipping rows over-spends whenever a prize cost is not a multiple of
+        // the score amount (e.g. a 15-pt prize would burn two 10-pt rows = 20).
+        $earned = Score::where('user_id', $userId)->sum('amount');
+        $spent = PrizeRedemption::where('user_id', $userId)->sum('score_cost');
+
+        return (int) ($earned - $spent);
     }
 
     /**

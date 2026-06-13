@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Prize;
 use App\Models\PrizeRedemption;
-use App\Models\Score;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -48,33 +47,11 @@ class PrizeRedemptionService
             // Decrement prize stock by 1
             $prize->decrement('amount');
 
-            $this->consumeScoresFifo($user->id, $prize->cost);
+            // The redemption row (score_cost) is the source of truth for spend.
+            // Available balance is derived as earned - sum(score_cost), so we no
+            // longer flip score rows (which over-spent on non-multiple costs).
 
             return $redemption;
         });
-    }
-
-    /**
-     * Mark the oldest active scores as status=0 (used) up to the required amount.
-     * Consumes whole score records FIFO (oldest first).
-     */
-    private function consumeScoresFifo(int $userId, int $required): void
-    {
-        $remaining = $required;
-
-        Score::where('user_id', $userId)
-            ->where('status', 1)
-            ->orderBy('created_at')
-            ->orderBy('id')
-            ->each(function (Score $score) use (&$remaining) {
-                if ($remaining <= 0) {
-                    return false; // stop iteration
-                }
-
-                $score->status = 0;
-                $score->save();
-
-                $remaining -= $score->amount;
-            });
     }
 }
