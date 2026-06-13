@@ -25,7 +25,8 @@ Route::post('/logout',[UserAuthController::class,'logout'])
 Route::get('/toplist/{round}',[ScoreController::class,'toplist']);
 
 // Prizes - available to all users
-Route::get('/prizes/{round}', [PrizeController::class, 'index']);
+// Constrain to numeric rounds so this does not shadow /prizes/redemptions etc.
+Route::get('/prizes/{round}', [PrizeController::class, 'index'])->whereNumber('round');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [UserAuthController::class, 'getUser']);
