@@ -52,6 +52,13 @@ Route::get('/auth/google/failed', function (Request $request) {
     ]);
 })->name('google.failed');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy_policy', [
+        'lastUpdated'  => 'June 13, 2026',
+        'contactEmail' => 'e.medjesi@gmail.com',
+    ]);
+})->middleware('throttle:20,1')->name('privacy.policy');
+
 Route::prefix('people')->group(function () {
     Route::get('/', [PeopleController::class, 'index']);
 });
