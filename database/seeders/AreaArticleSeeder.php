@@ -27,9 +27,9 @@ class AreaArticleSeeder extends Seeder
             for ($i = 1; $i <= 3; $i++) {
                 $title = $this->generateTitle($area->name, $i);
 
-                // Skip if article already exists
-                if (AreaArticle::where('area_id', $area->id)->where('title', $title)->exists()) {
-                    $this->command->info("  - Article '{$title}' already exists, skipping...");
+                // Skip if article already exists (match on the English title in the JSON column)
+                if (AreaArticle::where('area_id', $area->id)->where('title->en', $title['en'])->exists()) {
+                    $this->command->info("  - Article '{$title['en']}' already exists, skipping...");
                     continue;
                 }
 
@@ -42,86 +42,112 @@ class AreaArticleSeeder extends Seeder
                     'published_at' => $i <= 2 ? now()->subDays(rand(1, 30)) : null, // First 2 published, 3rd draft
                 ]);
 
-                $this->command->info("  ✓ Created: {$title}");
+                $this->command->info("  ✓ Created: {$title['en']}");
             }
         }
 
         $this->command->info('Area articles seeded successfully!');
     }
 
-    private function generateTitle(string $areaName, int $index): string
+    /**
+     * Returns translations keyed by locale: ['en' => '...', 'sr' => '...', 'rsn' => '...'].
+     * sr is Serbian (Latin), rsn is Rusyn (Cyrillic), matching the janikoke54 app.
+     * spatie/laravel-translatable stores the array as JSON on the column.
+     */
+    private function generateTitle(string $areaName, int $index): array
     {
         $titles = [
-            1 => "Discover the Beauty of {areaName}",
-            2 => "Top Things to Do in {areaName}",
-            3 => "History and Culture of {areaName}",
+            'en' => [
+                1 => "Discover {areaName}",
+                2 => "Things to Do in {areaName}",
+                3 => "History of {areaName}",
+            ],
+            'sr' => [
+                1 => "Otkrijte {areaName}",
+                2 => "Šta raditi u {areaName}",
+                3 => "Istorija {areaName}",
+            ],
+            'rsn' => [
+                1 => "Виглєдуй {areaName}",
+                2 => "Цо робиц у {areaName}",
+                3 => "История {areaName}",
+            ],
         ];
 
-        return str_replace('{areaName}', $areaName, $titles[$index]);
+        return $this->localize($titles, $areaName, $index, [
+            'en' => "Article about {areaName}",
+            'sr' => "Članak o {areaName}",
+            'rsn' => "Артикул о {areaName}",
+        ]);
     }
 
-    private function generateExcerpt(string $areaName, int $index): string
+    private function generateExcerpt(string $areaName, int $index): array
     {
         $excerpts = [
-            1 => "Discover what makes {areaName} a special destination. From its unique features to local attractions, this guide covers everything you need to know.",
-            2 => "Looking for activities in {areaName}? Explore our curated list of experiences that showcase the best this area has to offer.",
-            3 => "Dive deep into the rich history and culture of {areaName}. Learn about the stories and traditions that shape this remarkable place.",
+            'en' => [
+                1 => "A short intro to {areaName}.",
+                2 => "Things to do in {areaName}.",
+                3 => "A bit of history about {areaName}.",
+            ],
+            'sr' => [
+                1 => "Kratak uvod o {areaName}.",
+                2 => "Šta raditi u {areaName}.",
+                3 => "Malo istorije o {areaName}.",
+            ],
+            'rsn' => [
+                1 => "Кратки увод о {areaName}.",
+                2 => "Цо робиц у {areaName}.",
+                3 => "Дакус историї о {areaName}.",
+            ],
         ];
 
-        return str_replace('{areaName}', $areaName, $excerpts[$index]);
+        return $this->localize($excerpts, $areaName, $index, [
+            'en' => "This is the article about the location you just entered.",
+            'sr' => "Ovo je članak o lokaciji koju ste upravo izabrali.",
+            'rsn' => "То е артикул о локациї хтору сце лєм цо вибрали.",
+        ]);
     }
 
-    private function generateContent(string $areaName, int $index): string
+    private function generateContent(string $areaName, int $index): array
     {
         $contents = [
-            1 => "<h2>Welcome to {areaName}</h2>
-<p>{areaName} is a vibrant area known for its unique character and diverse attractions. Whether you're a first-time visitor or a long-time resident, there's always something new to discover.</p>
-
-<h3>What Makes This Area Special</h3>
-<p>The charm of {areaName} lies in its authentic atmosphere and welcoming community. Visitors are drawn to its distinctive features and the warm hospitality of locals who call this place home.</p>
-
-<h3>Getting Around</h3>
-<p>Navigating {areaName} is straightforward, with various transportation options available. The area is well-connected and easily accessible, making it convenient for both quick visits and extended stays.</p>
-
-<h3>Local Tips</h3>
-<ul>
-<li>Visit during early morning or late afternoon for the best experience</li>
-<li>Don't miss the local specialties unique to this area</li>
-<li>Take time to explore the quieter spots away from main attractions</li>
-<li>Chat with locals to discover hidden gems</li>
-</ul>
-
-<p>Whether you're here for leisure or exploration, {areaName} offers a memorable experience that captures the essence of the region.</p>",
-
-            2 => "<h2>Activities and Attractions in {areaName}</h2>
-<p>From outdoor adventures to cultural experiences, {areaName} provides a diverse range of activities for all interests and ages.</p>
-
-<h3>Popular Activities</h3>
-<p>The area features numerous opportunities for recreation and entertainment. Whether you prefer active pursuits or leisurely exploration, you'll find plenty to keep you engaged.</p>
-
-<h3>Seasonal Highlights</h3>
-<p>Each season brings its own charm to {areaName}:</p>
-
-<p>{areaName} welcomes families with various activities suitable for children and adults alike. Safe, engaging, and educational experiences make this a great destination for all ages.</p>
-
-<h3>Local Events</h3>
-<p>Throughout the year, {areaName} hosts community events and gatherings that showcase local culture and bring people together. Check local listings for current happenings during your visit.</p>",
-
-            3 => "<h2>The Story of {areaName}</h2>
-<p>Understanding the background of {areaName} adds depth to any visit. This area has evolved over time while maintaining its distinctive character.</p>
-
-<h3>Historical Context</h3>
-<p>The development of {areaName} reflects broader patterns in the region's growth. From its early days to the present, this area has played a significant role in the local community.</p>
-
-<h3>Cultural Significance</h3>
-<p>Today, {areaName} represents a blend of tradition and modernity. The area preserves its heritage while embracing contemporary developments, creating a unique cultural landscape.</p>
-
-<blockquote>
-<p>'{areaName} is more than just a place on a map – it's a living community with its own rhythm and personality.'</p>
-</blockquote>
-",
+            'en' => [
+                1 => "<p>Welcome to {areaName}. This is the article about the location you just entered.</p>",
+                2 => "<p>Discover the activities and attractions in {areaName}.</p>",
+                3 => "<p>Learn a bit about the history and culture of {areaName}.</p>",
+            ],
+            'sr' => [
+                1 => "<p>Dobrodošli u {areaName}. Ovo je članak o lokaciji koju ste upravo izabrali.</p>",
+                2 => "<p>Otkrijte aktivnosti i znamenitosti u {areaName}.</p>",
+                3 => "<p>Saznajte nešto o istoriji i kulturi {areaName}.</p>",
+            ],
+            'rsn' => [
+                1 => "<p>Витайце до {areaName}. То е артикул о локациї хтору сце лєм цо вибрали.</p>",
+                2 => "<p>Виглєдуй активносци и знаменитосци у {areaName}.</p>",
+                3 => "<p>Дознай дашто о историї и култури {areaName}.</p>",
+            ],
         ];
 
-        return str_replace('{areaName}', $areaName, $contents[$index]);
+        return $this->localize($contents, $areaName, $index, [
+            'en' => "<p>This is the article about the location you just entered.</p>",
+            'sr' => "<p>Ovo je članak o lokaciji koju ste upravo izabrali.</p>",
+            'rsn' => "<p>То е артикул о локациї хтору сце лєм цо вибрали.</p>",
+        ]);
+    }
+
+    /**
+     * Builds the per-locale array, applying the locale's fallback text when an
+     * index has no entry and substituting the area name.
+     */
+    private function localize(array $byLocale, string $areaName, int $index, array $fallbacks): array
+    {
+        $out = [];
+
+        foreach ($fallbacks as $locale => $fallback) {
+            $text = $byLocale[$locale][$index] ?? $fallback;
+            $out[$locale] = str_replace('{areaName}', $areaName, $text);
+        }
+
+        return $out;
     }
 }

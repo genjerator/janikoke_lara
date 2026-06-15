@@ -7,6 +7,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ArticlesRelationManager extends RelationManager
 {
@@ -14,16 +15,55 @@ class ArticlesRelationManager extends RelationManager
 
     protected static ?string $title = 'Area Articles';
 
+    /**
+     * Locales the articles can be translated into. Matches the janikoke54
+     * mobile app and the SetLocale middleware's supported locales.
+     */
+    private const LOCALES = [
+        'en' => 'English',
+        'sr' => 'Serbian',
+        'rsn' => 'Rusyn',
+    ];
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('Article Title')
-                    ->required()
-                    ->maxLength(255)
-                    ->placeholder('Enter article title')
-                    ->columnSpanFull(),
+                Forms\Components\Tabs::make('Translations')
+                    ->columnSpanFull()
+                    ->tabs(collect(self::LOCALES)->map(
+                        fn (string $label, string $locale) => Forms\Components\Tabs\Tab::make($label)
+                            ->schema([
+                                Forms\Components\TextInput::make("title.{$locale}")
+                                    ->label('Article Title')
+                                    ->required($locale === 'en')
+                                    ->maxLength(255)
+                                    ->placeholder('Enter article title'),
+
+                                Forms\Components\Textarea::make("excerpt.{$locale}")
+                                    ->label('Excerpt')
+                                    ->rows(3)
+                                    ->nullable()
+                                    ->placeholder('Brief summary of the article (optional)'),
+
+                                Forms\Components\RichEditor::make("content.{$locale}")
+                                    ->label('Article Content')
+                                    ->required($locale === 'en')
+                                    ->toolbarButtons([
+                                        'bold',
+                                        'italic',
+                                        'underline',
+                                        'strike',
+                                        'link',
+                                        'bulletList',
+                                        'orderedList',
+                                        'h2',
+                                        'h3',
+                                        'blockquote',
+                                    ])
+                                    ->placeholder('Write your article content here...'),
+                            ])
+                    )->values()->all()),
 
                 Forms\Components\DateTimePicker::make('published_at')
                     ->label('Publish Date')
@@ -34,31 +74,6 @@ class ArticlesRelationManager extends RelationManager
                     ->label('Active')
                     ->default(true)
                     ->helperText('Only active articles will be visible'),
-
-                Forms\Components\Textarea::make('excerpt')
-                    ->label('Excerpt')
-                    ->rows(3)
-                    ->nullable()
-                    ->placeholder('Brief summary of the article (optional)')
-                    ->columnSpanFull(),
-
-                Forms\Components\RichEditor::make('content')
-                    ->label('Article Content')
-                    ->required()
-                    ->columnSpanFull()
-                    ->toolbarButtons([
-                        'bold',
-                        'italic',
-                        'underline',
-                        'strike',
-                        'link',
-                        'bulletList',
-                        'orderedList',
-                        'h2',
-                        'h3',
-                        'blockquote',
-                    ])
-                    ->placeholder('Write your article content here...'),
             ]);
     }
 
@@ -69,8 +84,10 @@ class ArticlesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
-                    ->sortable()
-                    ->searchable()
+                    // title/excerpt/content are translatable JSON columns; query the
+                    // default-locale path since Postgres can't sort/LIKE a json value.
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderByRaw("title->>'en' {$direction}"))
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("title->>'en' ILIKE ?", ["%{$search}%"]))
                     ->weight('bold')
                     ->limit(50),
 
@@ -107,10 +124,17 @@ class ArticlesRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Add Article')
-                    ->icon('heroicon-o-plus'),
+                    ->icon('heroicon-o-plus')
+                    ->mutateFormDataUsing(fn (array $data): array => $this->stripEmptyTranslations($data)),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateRecordDataUsing(fn (array $data, $record): array => array_merge($data, [
+                        'title' => $record->getTranslations('title'),
+                        'excerpt' => $record->getTranslations('excerpt'),
+                        'content' => $record->getTranslations('content'),
+                    ]))
+                    ->mutateFormDataUsing(fn (array $data): array => $this->stripEmptyTranslations($data)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -122,5 +146,23 @@ class ArticlesRelationManager extends RelationManager
             ->emptyStateHeading('No articles yet')
             ->emptyStateDescription('Add your first article for this area')
             ->emptyStateIcon('heroicon-o-document-text');
+    }
+
+    /**
+     * Remove blank locale values so untranslated languages are not stored as
+     * empty strings — this keeps spatie's fallback to the default locale working.
+     */
+    private function stripEmptyTranslations(array $data): array
+    {
+        foreach (['title', 'excerpt', 'content'] as $field) {
+            if (is_array($data[$field] ?? null)) {
+                $data[$field] = array_filter(
+                    $data[$field],
+                    fn ($value) => filled($value)
+                );
+            }
+        }
+
+        return $data;
     }
 }

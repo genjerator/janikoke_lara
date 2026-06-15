@@ -40,6 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/round/{round}/scores', [ScoreController::class, 'roundScores']);
     Route::get('/round/{round}/result', [ScoreController::class, 'roundScores']);
+    Route::get('/round/{round}/articles', [RoundController::class, 'articles']);
 
     Route::get('/scores/{round}/total', [ScoreController::class, 'total']);
 
