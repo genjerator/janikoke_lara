@@ -38,6 +38,7 @@ Route::get('/rrtestmap', [TestmapController::class, 'index']);
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+//test
 Route::get('/testmapi', function () {
     return Inertia::render('Testmap');
 })->name('rrtestmap');
