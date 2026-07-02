@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,18 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('livewire-update', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        // Throttle Livewire's /livewire/update endpoint. Livewire only registers
+        // its default route when one isn't already set, so this overrides it while
+        // preserving the required `web` middleware.
+        Livewire::setUpdateRoute(function ($handle) {
+            return Route::post('/livewire/update', $handle)
+                ->middleware(['web', 'throttle:livewire-update']);
         });
 
         $this->routes(function () {
